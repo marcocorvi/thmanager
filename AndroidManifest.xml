@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.topodroid.ThManager"
+      android:versionCode="00002"
+      android:versionName="0.0.2">
+    <uses-sdk
+       android:minSdkVersion="8"
+       android:targetSdkVersion="8"
+       
+    />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+          android:name=".ThManagerApp"
+          android:label="@string/app_name"
+          android:icon="@drawable/icon" >
+
+        <activity android:name=".ThManagerActivity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="ThManager.intent.action.Launch" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".ThManagerPreferences"
+                  android:screenOrientation="portrait"
+                  android:label="@string/app_name">
+        </activity>
+
+        <activity android:name=".CWDActivity"
+                  android:screenOrientation="portrait"
+                  android:label="@string/app_name">
+        </activity>
+
+
+        <!-- 
+        <activity android:name=".FileEditorActivity"
+                  android:label="@string/app_name">
+        </activity>
+
+        <activity android:name=".SourceActivity"
+                  android:label="@string/app_name">
+        </activity>
+
+        <activity android:name=".SurveyActivity"
+                  android:label="@string/app_name">
+        </activity>
+        -->
+
+        <activity android:name=".ThConfigActivity"
+                  android:label="@string/app_name">
+        </activity>
+
+        <activity android:name=".ThViewActivity"
+                  android:label="@string/app_name">
+        </activity>
+
+
+    </application>
+</manifest> 

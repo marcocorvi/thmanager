@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ThManager</string>
+
+    <string name="no_editor">Editor not found</string>
+    <string name="no_file">File not found</string>
+    <string name="no_extra">Missing file extra</string>
+    <string name="no_path">Missing filepath</string>
+    <string name="no_equate">No equate</string>
+    <string name="no_thconfig">Missing thconfig file</string>
+    <string name="no_th_file">No Therion file</string>
+    <string name="file_exists">File exists</string>
+    <string name="file_create_fail">File create fail</string>
+
+    <string name="ask_delete_thconfig">Delete ThConfig file</string>
+
+    <string name="menu_delete">Delete</string>
+    <string name="menu_new">New</string>
+    <string name="menu_equate">Equates</string>
+    <string name="menu_options">Options</string>
+    <string name="menu_help">Help</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_view">View sources</string>
+    <string name="menu_add">Add source</string>
+    <string name="menu_drop">Drop sources</string>
+
+    <string name="button_ok">O.K.</string>
+    <string name="button_cancel">Cancel</string>
+
+    <string name="pref_cwd_title">Current Work Directory</string>
+    <string name="pref_dist_title">Selection radius</string>
+    <string name="pref_dist_summary">Selection radius</string>
+    <string name="pref_dist_message">Selection radius</string>
+    <string name="pref_textsize_title">Station name size</string>
+    <string name="pref_textsize_summary">Station name size</string>
+    <string name="pref_textsize_message">Station name size</string>
+
+</resources>
