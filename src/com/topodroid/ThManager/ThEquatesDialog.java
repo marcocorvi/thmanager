@@ -43,7 +43,7 @@ class ThEquatesDialog extends Dialog
     } else {
       mEquates = new ArrayList< ThEquate >();
     }
-    Log.v("ThManager", "ThEquatesDialog equates " + mEquates.size() );
+    // Log.v("ThManager", "ThEquatesDialog equates " + mEquates.size() );
   }
 
   @Override

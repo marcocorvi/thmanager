@@ -19,7 +19,7 @@ class ThInput extends ThFile
   {
     super( filepath );
 
-    Log.v("ThManager", "new ThInput name " + filename + " path " + filepath );
+    // Log.v("ThManager", "new ThInput name " + filename + " path " + filepath );
 
     mFilename = filename;
     mChecked  = false;

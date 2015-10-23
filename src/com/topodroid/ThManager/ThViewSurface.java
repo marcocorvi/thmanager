@@ -132,7 +132,7 @@ public class ThViewSurface extends SurfaceView
     {
       x = x / mZoom; // canvasToSceneX( x );
       y = y / mZoom; // canvasToSceneY( y );
-      Log.v("ThManager", "at " + x + " " + y );
+      // Log.v("ThManager", "at " + x + " " + y );
       mCommand = null;
       double dmin = 100000; // FIXME a large number
       for ( ThViewCommand command : mCommandManager ) {
@@ -243,7 +243,7 @@ public class ThViewSurface extends SurfaceView
 
     public void surfaceCreated(SurfaceHolder mHolder) 
     {
-      Log.v( "ThManager", "surface created " );
+      // Log.v( "ThManager", "surface created " );
       if (thread == null ) {
         thread = new DrawThread(mHolder);
       }
@@ -253,7 +253,7 @@ public class ThViewSurface extends SurfaceView
 
     public void surfaceDestroyed(SurfaceHolder mHolder) 
     {
-      Log.v( "ThManager", "surface destroyed " );
+      // Log.v( "ThManager", "surface destroyed " );
       boolean retry = true;
       thread.setRunning(false);
       while (retry) {

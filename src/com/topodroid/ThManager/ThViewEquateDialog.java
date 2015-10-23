@@ -112,7 +112,7 @@ class ThViewEquateDialog extends Dialog
         if ( len < st.length() ) st = st.substring(0,len);
         equate.addStation( st );
       }
-      Log.v("ThManager", "EQUATE " + equate.stationsString() );
+      // Log.v("ThManager", "EQUATE " + equate.stationsString() );
       mApp.mConfig.addEquate( equate );
     }
     dismiss();

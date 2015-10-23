@@ -105,7 +105,7 @@ public class ThParser
   ThParser( String filename, ThSurvey survey, ThUnits units ) 
   {
     cnt = 0;
-    Log.v("ThManager", "parser file " + filename + " survey " + survey.mName  );
+    // Log.v("ThManager", "parser file " + filename + " survey " + survey.mName  );
     String dirname = (new File( filename )).getParentFile().getName() + "/";
     try {
       FileReader fr = new FileReader( filename );
@@ -131,7 +131,7 @@ public class ThParser
       } else if ( cmd.equals("survey") ) { // swallow up to "endsurvey" 
         if ( ( idx = nextIndex( vals, idx ) ) < vals.length ) {
 	  ThSurvey survey1 = new ThSurvey( vals[idx] + "." + survey.mName );
-          Log.v( "ThManager", "add survey " + survey1.mName );
+          // Log.v( "ThManager", "add survey " + survey1.mName );
 	  survey.addSurvey( survey1 );
 	  parseSurvey( dirname, br, survey1, units );
 	}

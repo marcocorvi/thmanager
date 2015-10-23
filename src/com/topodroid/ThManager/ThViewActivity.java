@@ -215,7 +215,7 @@ public class ThViewActivity extends Activity
     private void doStart()
     {
       ArrayList< ThSurvey > surveys = mApp.mViewSurveys;
-      Log.v( "ThManager", "ThView nr. surveys " + surveys.size() );
+      // Log.v( "ThManager", "ThView nr. surveys " + surveys.size() );
       int color[] = new int[6];
       color[0] = 0xffffffff;
       color[1] = 0xffff00ff;
@@ -251,7 +251,7 @@ public class ThViewActivity extends Activity
         if ( i+1 < ev.getPointerCount() ) sb.append( ":" );
       }
       sb.append( "]" );
-      Log.v("ThManager", sb.toString() );
+      Log.d("ThManager", sb.toString() );
     }
     
 

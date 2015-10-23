@@ -54,12 +54,12 @@ class ThSourcesDialog extends Dialog
   {
     mThSourceAdapter = new ThSourceAdapter( mContext, R.layout.thsource_adapter, mSources );
     File[] files = ThManagerPath.scanThDir();
-    Log.v("ThManager", "source nr " + files.length );
+    // Log.v("ThManager", "source nr " + files.length );
     for ( File file : files ) {
       String name = file.getName();
       if ( ! mParent.hasSource( name ) ) {
         String path = ThManagerPath.getThPath( name );
-        Log.v("ThManager", "source name " + name + " path " + path );
+        // Log.v("ThManager", "source name " + name + " path " + path );
         mThSourceAdapter.addThSource( new ThSource( name, path ) );
       }
     }
@@ -78,7 +78,7 @@ class ThSourcesDialog extends Dialog
   {
     hide();
     ArrayList<String> sources = mThSourceAdapter.getCheckedSources();
-    Log.v("ThManager", "checked sources " + sources.size() );
+    // Log.v("ThManager", "checked sources " + sources.size() );
     mParent.addSources( sources );
     dismiss();
   }
