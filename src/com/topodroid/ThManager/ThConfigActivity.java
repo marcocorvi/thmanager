@@ -38,7 +38,6 @@ import android.util.Log;
 
 public class ThConfigActivity extends Activity
 {
-  ThConfig mThConfig;
   ThInputAdapter mThInputAdapter;
   ThManagerApp mApp;
 
@@ -53,16 +52,16 @@ public class ThConfigActivity extends Activity
 
     mApp = (ThManagerApp) getApplication();
 
-    mThConfig = null;
+    mApp.mConfig = null;
     Bundle extras = getIntent().getExtras();
     if ( extras != null ) {
       String path = extras.getString( ThManagerApp.THCONFIG_PATH );
       if ( path != null ) {
         // Log.v( ThManagerApp.TAG, "ThConfigActivity path " + path );
         if ( (new File(path)).exists() ) {
-          mThConfig = new ThConfig( path );
-          mThConfig.readThConfig();
-          setTitle( "PROJECT " + mThConfig.toString() );
+          mApp.mConfig = new ThConfig( path );
+          mApp.mConfig.readThConfig();
+          setTitle( "PROJECT " + mApp.mConfig.toString() );
         } else {
           Toast.makeText( this, R.string.no_file, Toast.LENGTH_LONG ).show();
         }
@@ -71,7 +70,7 @@ public class ThConfigActivity extends Activity
         Toast.makeText( this, R.string.no_path, Toast.LENGTH_LONG ).show();
       }
     }
-    if ( mThConfig == null ) {
+    if ( mApp.mConfig == null ) {
       doFinish( ThManagerApp.RESULT_THCONFIG_NONE );
     } else {
       setContentView(R.layout.thconfig_activity);
@@ -92,21 +91,21 @@ public class ThConfigActivity extends Activity
   {
     super.onPause();
     // Log.v("ThManager", "ThConfig activity on pause");
-    if ( mThConfig != null ) mThConfig.writeThConfig( false );
+    if ( mApp.mConfig != null ) mApp.mConfig.writeThConfig( false );
   }
 
   boolean hasSource( String name ) 
   {
-    return mThConfig.hasInput( name );
+    return mApp.mConfig.hasInput( name );
   }
 
   /** update surveys list
    */
   void updateList()
   {
-    if ( mThConfig != null ) {
-      // Log.v("ThManager", "ThConfig input nr. " + mThConfig.mInputs.size() );
-      mThInputAdapter = new ThInputAdapter( this, R.layout.row, mThConfig.mInputs );
+    if ( mApp.mConfig != null ) {
+      // Log.v("ThManager", "ThConfig input nr. " + mApp.mConfig.mInputs.size() );
+      mThInputAdapter = new ThInputAdapter( this, R.layout.row, mApp.mConfig.mInputs );
       mList.setAdapter( mThInputAdapter );
     } else {
       Toast.makeText( this, R.string.no_thconfig, Toast.LENGTH_LONG ).show();
@@ -154,7 +153,7 @@ public class ThConfigActivity extends Activity
     } else if ( item == mMIview ) { 
       startThSurveysActivity();
     } else if  ( item == mMIequate ) { 
-      (new ThEquatesDialog( this, mThConfig )).show();
+      (new ThEquatesDialog( this, mApp.mConfig )).show();
     }
     return true;
   }
@@ -165,7 +164,7 @@ public class ThConfigActivity extends Activity
     ThSurvey mySurvey = new ThSurvey( "." );
     ThUnits  myUnits  = new ThUnits();
 
-    for ( ThInput input : mThConfig.mInputs ) {
+    for ( ThInput input : mApp.mConfig.mInputs ) {
       if ( input.isChecked() ) {
         // Log.v("ThManager", "parse file " + input.mFilepath );
         ThParser parser = new ThParser( input.mFilepath, mySurvey, myUnits );
@@ -194,7 +193,7 @@ public class ThConfigActivity extends Activity
       // Log.v("ThManager", "add  source " + filename );
       String filepath = filename;
       if ( ! filename.startsWith("/") ) {
-        // filepath = mThConfig.mParentDir + "../th/" + filename;     
+        // filepath = mApp.mConfig.mParentDir + "../th/" + filename;     
         filepath = ThManagerPath.getThPath( filename );     
       }
       filepath = new File(filepath).getAbsolutePath();
@@ -219,7 +218,7 @@ public class ThConfigActivity extends Activity
 
   void doDelete()
   {
-    // if ( ! ThManagerApp.deleteThConfigFile( mThConfig.mFilepath ) ) { 
+    // if ( ! ThManagerApp.deleteThConfigFile( mApp.mConfig.mFilepath ) ) { 
     //   Toast.makeText( this, "delete FAILED", Toast.LENGTH_LONG ).show();
     // } else {
       doFinish( ThManagerApp.RESULT_THCONFIG_DELETE );
@@ -229,7 +228,7 @@ public class ThConfigActivity extends Activity
   void doFinish( int result )
   {
     Intent intent = new Intent();
-    intent.putExtra( ThManagerApp.THCONFIG_PATH, mThConfig.mFilepath );
+    intent.putExtra( ThManagerApp.THCONFIG_PATH, mApp.mConfig.mFilepath );
     setResult( result, intent );
     finish();
   }
@@ -237,14 +236,14 @@ public class ThConfigActivity extends Activity
   void dropSurveys()
   {
     ArrayList< ThInput > inputs = new ArrayList< ThInput >();
-    final Iterator it = mThConfig.mInputs.iterator();
+    final Iterator it = mApp.mConfig.mInputs.iterator();
     while ( it.hasNext() ) {
       ThInput input = (ThInput) it.next();
       if ( ! input.isChecked() ) {
         inputs.add( input );
       }
     }
-    mThConfig.mInputs = inputs;
+    mApp.mConfig.mInputs = inputs;
     updateList();
   }
 
@@ -254,7 +253,7 @@ public class ThConfigActivity extends Activity
   public void onBackPressed()
   {
     // Log.v("ThManager", "ThConfig activity back pressed");
-    // if ( mThConfig != null ) mThConfig.writeThConfig( false );
+    // if ( mApp.mConfig != null ) mApp.mConfig.writeThConfig( false );
     doFinish( ThManagerApp.RESULT_THCONFIG_OK );
   }
 

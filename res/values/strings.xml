@@ -13,6 +13,7 @@
     <string name="file_create_fail">File create fail</string>
 
     <string name="ask_delete_thconfig">Delete ThConfig file</string>
+    <string name="ask_remove_equate">Remove equate %1$s ?</string>
 
     <string name="menu_delete">Delete</string>
     <string name="menu_new">New</string>

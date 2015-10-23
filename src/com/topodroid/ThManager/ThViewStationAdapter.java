@@ -43,6 +43,20 @@ class ThViewStationAdapter extends ArrayAdapter< ThViewStation >
     mCommand = command;
   }
 
+  public ThStation getCheckedStation( ) 
+  { 
+    for ( ThViewStation tv : mItems ) {
+      if ( tv.isChecked() ) return tv.mStation;
+    }
+    return null;
+  }
+
+  public String getStationName() 
+  {
+    if ( mTextView.getText() != null ) return mTextView.getText().toString();
+    return null;
+  }
+
   public ThViewStation get( int pos ) { return mItems.get(pos); }
 
   public int size() { return mItems.size(); }

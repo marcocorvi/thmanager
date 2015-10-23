@@ -42,6 +42,7 @@ public class ThManagerApp extends Application
   static String mCWD;
   SharedPreferences mPrefs;
   ArrayList< ThSurvey > mViewSurveys = null;
+  ThConfig mConfig = null;                    // current config file
   ThManagerActivity mActivity;
 
   static double mDist = 40;

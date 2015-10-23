@@ -34,6 +34,10 @@ class ThConfig extends ThFile
     mRead = false;
   }
 
+  void addEquate( ThEquate equate ) { mEquates.add( equate ); }
+
+  void removeEquate( ThEquate equate ) { mEquates.remove( equate ); }
+
   void readThConfig()
   {
     if ( mRead ) return;

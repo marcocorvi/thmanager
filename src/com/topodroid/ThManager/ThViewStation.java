@@ -44,6 +44,8 @@ class ThViewStation
     }
   }
 
+  boolean isChecked() { return mCB != null && mCB.isChecked(); }
+
   boolean resetChecked()
   {
     boolean ret = mChecked;

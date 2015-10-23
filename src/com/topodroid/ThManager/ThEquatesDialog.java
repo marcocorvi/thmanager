@@ -6,6 +6,7 @@ package com.topodroid.ThManager;
 import java.util.ArrayList;
 import java.io.File;
 
+import android.content.DialogInterface;
 import android.app.Dialog;
 
 import android.view.View;
@@ -74,13 +75,30 @@ class ThEquatesDialog extends Dialog
     }
   }
 
+  void doRemoveEquate( ThEquate equate )
+  {
+    mEquates.remove( equate );
+    updateList();
+  }
+
+  void askRemoveEquate( final ThEquate equate )
+  {
+    new ThManagerAlertDialog( mContext, mContext.getResources(), 
+      String.format( mContext.getResources().getString( R.string.ask_remove_equate ), equate.stationsString() ),
+      new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick( DialogInterface dialog, int btn ) {
+          doRemoveEquate( equate );
+        }
+    } );
+  }
+
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
   {
     ThEquateViewHolder vh = (ThEquateViewHolder) view.getTag();
     if ( vh != null ) {
-      mEquates.remove( vh.equate );
-      updateList();
+      askRemoveEquate( vh.equate );
     }
   }
       

@@ -37,6 +37,7 @@ class ThViewEquateDialog extends Dialog
   ThManagerApp mApp;
   ThViewActivity mParent;
   ArrayList< ThViewCommand > mCommands;
+  ArrayList< ThViewStationAdapter > mAdapters;
   LinearLayout mLayout;
   Button mBTok;
 
@@ -47,6 +48,7 @@ class ThViewEquateDialog extends Dialog
     mParent = parent;
     mApp = app;
     // Log.v("ThManager", "ThViewEquateDialog equates " + mEquates.size() );
+    mAdapters = new ArrayList< ThViewStationAdapter >();
   }
 
   @Override
@@ -64,6 +66,7 @@ class ThViewEquateDialog extends Dialog
     setTitle("THERION EQUATES");
 
     mLayout = (LinearLayout) findViewById( R.id.layout );
+
     mBTok = (Button) findViewById( R.id.ok );
     mBTok.setOnClickListener( this );
 
@@ -84,6 +87,7 @@ class ThViewEquateDialog extends Dialog
       ThViewStationAdapter adapter = 
           new ThViewStationAdapter( mContext, R.layout.thviewstation_adapter, command.mStationsArray, tv, command );
       lv.setAdapter( adapter );
+      mAdapters.add( adapter );
       
       rl.addView( tv, new LayoutParams( LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT ) );
       rl.addView( lv, new LayoutParams( LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
@@ -96,8 +100,21 @@ class ThViewEquateDialog extends Dialog
   @Override
   public void onClick( View v )
   {
-    // Button OK
-    // SAVE equate
+    
+    Button b = (Button)v;
+    if ( b == mBTok ) { // SAVE equate
+      ThEquate equate = new ThEquate();
+      for ( ThViewStationAdapter adapter : mAdapters ) {
+        ThStation ts = adapter.getCheckedStation();
+        String st = adapter.getStationName();
+        int len = st.length();
+        while ( len > 0 && st.charAt( len - 1 ) == '.' ) -- len;
+        if ( len < st.length() ) st = st.substring(0,len);
+        equate.addStation( st );
+      }
+      Log.v("ThManager", "EQUATE " + equate.stationsString() );
+      mApp.mConfig.addEquate( equate );
+    }
     dismiss();
   }
 

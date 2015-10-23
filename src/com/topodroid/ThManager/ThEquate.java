@@ -30,8 +30,9 @@ class ThEquate
   {
     StringBuilder sb = new StringBuilder();
     for ( String name : mStations ) {
-      sb.append( name );
+      sb.append( name + " " );
     }
+    sb.deleteCharAt( sb.length() - 1 );
     return sb.toString();
   }
 }
