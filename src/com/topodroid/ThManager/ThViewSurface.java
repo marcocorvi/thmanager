@@ -12,7 +12,7 @@
 package com.topodroid.ThManager;
 
 import android.content.Context;
-import android.graphics.*; // Bitmap
+import android.graphics.*; // Bitmap, Matrix, Paint
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -48,10 +48,13 @@ public class ThViewSurface extends SurfaceView
 
     ArrayList< ThViewCommand > mCommandManager; // FIXME not private only to export DXF
     ThViewCommand mCommand = null;
+    ArrayList< ThViewEquate > mEquates;
 
     float mXoffset;
     float mYoffset;
     float mZoom;
+    private Matrix mMatrix;
+    private Paint  mPaint;  // equate paint
 
     float canvasToSceneX( float x_canvas ) { return (x_canvas + mXoffset)/mZoom; }
     float canvasToSceneY( float y_canvas ) { return (y_canvas + mYoffset)/mZoom; }
@@ -72,6 +75,15 @@ public class ThViewSurface extends SurfaceView
       mXoffset = 0;
       mYoffset = 0;
       mZoom = 1;
+      mMatrix = new Matrix();
+      mPaint  = new Paint();
+      mPaint.setDither(true);
+      mPaint.setColor( 0xffff3333 ); // dark red
+      mPaint.setStyle( Paint.Style.STROKE );
+      mPaint.setPathEffect( new DashPathEffect( new float[]{ 10, 20 }, 0 ) );
+      mPaint.setStrokeJoin(Paint.Join.ROUND);
+      mPaint.setStrokeCap(Paint.Cap.ROUND);
+      mPaint.setStrokeWidth( 2 );
 
       thread = null;
       mContext = context;
@@ -79,6 +91,7 @@ public class ThViewSurface extends SurfaceView
       mHolder = getHolder();
       mHolder.addCallback(this);
       mCommandManager = new ArrayList< ThViewCommand >();
+      mEquates = new ArrayList< ThViewEquate >();
     }
 
     void resetStation()
@@ -94,11 +107,58 @@ public class ThViewSurface extends SurfaceView
       mDisplayCenter = new PointF( x, y );
     }
 
-    void addSurvey( ThSurvey survey, int color, float xoff, float yoff )
+    void addEquates( ArrayList< ThEquate > equates )
+    {
+      // Log.v("ThManager", "add equates: size " + equates.size() );
+      mEquates.clear();
+      for ( ThEquate equate : equates ) {
+        ArrayList< ThViewStation > vst = new ArrayList< ThViewStation >();
+        for ( ThViewCommand command : mCommandManager ) {
+          String survey_name = command.mSurvey.mName;
+          int len = survey_name.length();
+          while ( len > 0 && survey_name.charAt( len-1 ) == '.' ) --len;
+          survey_name = survey_name.substring( 0, len );
+          String st = equate.getSurveyStation( survey_name );
+          if ( st != null ) {
+            vst.add( command.getViewStation( st ) );
+          // } else {
+          //   Log.v("ThManager", "survey " + survey_name + " has no equate");
+          }
+        }
+        if ( vst.size() > 1 ) {
+          ThViewEquate veq = new ThViewEquate( equate );
+          for ( ThViewStation vs : vst ) veq.addViewStation( vs );
+          mEquates.add( veq );
+        }
+      }
+      // for ( ThViewEquate veq : mEquates ) veq.dump();
+    }
+
+    void addSurvey( ThSurvey survey, int color, float xoff, float yoff, ArrayList< ThEquate > equates )
     {
       ThViewCommand command = new ThViewCommand( survey, color, xoff, yoff );
+      ArrayList< String > equate_stations = new ArrayList<String>();
+
+      String survey_name = survey.getName();
+      int len = survey_name.length();
+      while ( len > 0 && survey_name.charAt( len-1 ) == '.' ) --len;
+      survey_name = survey_name.substring( 0, len );
+      for ( ThEquate equate : equates ) {
+        String station = equate.getSurveyStation( survey_name );
+        if ( station != null ) {
+          // Log.v("ThManager", "equate station " + station + " survey <" + survey_name  + ">" );
+          equate_stations.add( station );
+        }
+      }
+      // Log.v("ThManager", "Survey " + survey.mName + " equated stations " + equate_stations.size() );
+      // for ( String st : equate_stations ) Log.v("ThManager", "station " + st);
+
       for ( ThStation st : survey.mStations ) {
-        command.addStation( st );
+        boolean equated = false;
+        for ( String name : equate_stations ) {
+          if ( name.equals( st.mName ) ) { equated = true; break; }
+        }
+        command.addStation( st, equated );
       }
       for ( ThShot sh : survey.mShots ) {
         command.addShot( sh );
@@ -115,31 +175,40 @@ public class ThViewSurface extends SurfaceView
       mYoffset += dy;
       mZoom    *= rs;
       for ( ThViewCommand command : mCommandManager ) command.transform( dx, dy, rs );
+      // scale matrix
+      mMatrix = new Matrix();
+      mMatrix.postTranslate( mXoffset, mYoffset );
+      mMatrix.postScale( mZoom, mZoom );
     }
 
     void changeZoom( float f )
     {
-      // float zoom0 = mZoom;
-      // float zoom1 = zoom0 * f;
-      // float dx = mXoffset - mDisplayCenter.x*(1/zoom1-1/zoom0);
-      // float dy = mYoffset - mDisplayCenter.y*(1/zoom1-1/zoom0);
-      // transform( dx, dy, f );
+      float zoom0 = mZoom;
+      float zoom1 = zoom0 * f;
+      float dx = mWidth*(1/zoom1-1/zoom0)/2;
+      float dy = mHeight*(1/zoom1-1/zoom0)/2;
+      transform( dx, dy, f );
       // FIXME TODO translate towards (0,0) so that the offset does not change
-      transform( 0, 0, f );
+      // transform( 0, 0, f );
     }
 
-    boolean getSurveyAt( float x, float y )
+    boolean getSurveyAt( float x, float y, ThViewCommand cmd )
     {
-      x = x / mZoom; // canvasToSceneX( x );
-      y = y / mZoom; // canvasToSceneY( y );
-      // Log.v("ThManager", "at " + x + " " + y );
+      if ( cmd == null ) {
+        x = x / mZoom; // canvasToSceneX( x );
+        y = y / mZoom; // canvasToSceneY( y );
+      } // else 
+        // x,y are scene coords
+      // Log.v("ThManager", "get survey at " + x + " " + y );
       mCommand = null;
       double dmin = 100000; // FIXME a large number
       for ( ThViewCommand command : mCommandManager ) {
-        double d = command.getStationAt( x, y );
-        if ( d < 40 && d < dmin ) {
-          dmin = d;
-          mCommand = command;
+        if ( command != cmd ) {
+          double d = command.getStationAt( x, y );
+          if ( d < 40 && d < dmin ) {
+            dmin = d;
+            mCommand = command;
+          }
         }
       }
       return (mCommand != null);
@@ -167,6 +236,12 @@ public class ThViewSurface extends SurfaceView
     { 
       if ( mCommand != null ) {
         mCommand.shift( dx, dy );
+        // update equates
+        synchronized( mEquates ) {
+          for ( ThViewEquate equate : mEquates ) {
+            equate.shift( dx, dy, mCommand );
+          }
+        }
       } else {
         transform( dx, dy, 1 );
       }
@@ -186,6 +261,11 @@ public class ThViewSurface extends SurfaceView
         mHeight = canvas.getHeight();
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
         for ( ThViewCommand command : mCommandManager ) command.executeAll( canvas, previewDoneHandler );
+        // the view-stations in the view-equate have different transformation matrix
+        // the two matrices have the same scale, but different translations
+        synchronized( mEquates ) {
+          for ( ThViewEquate equate : mEquates ) equate.draw( canvas, mMatrix, mPaint );
+        }
       } finally {
         if ( canvas != null ) {
           mHolder.unlockCanvasAndPost( canvas );

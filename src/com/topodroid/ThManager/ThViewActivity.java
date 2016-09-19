@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.content.pm.PackageManager;
+import android.content.DialogInterface;
 
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
@@ -215,7 +216,12 @@ public class ThViewActivity extends Activity
     private void doStart()
     {
       ArrayList< ThSurvey > surveys = mApp.mViewSurveys;
-      // Log.v( "ThManager", "ThView nr. surveys " + surveys.size() );
+      if ( surveys == null ) return;
+      // ThConfig config = mApp.mConfig;
+      ArrayList< ThEquate > equates = mApp.mConfig.mEquates;
+
+      // Log.v( "ThManager", "ThView nr. surveys " + surveys.size() + " equates " + equates.size() );
+
       int color[] = new int[6];
       color[0] = 0xffffffff;
       color[1] = 0xffff00ff;
@@ -225,9 +231,10 @@ public class ThViewActivity extends Activity
       color[5] = 0xff00ff00;
       int k = 0;
       for ( ThSurvey survey : surveys ) {
-        mDrawingSurface.addSurvey( survey, color[k%6], 0, 0 );
+        mDrawingSurface.addSurvey( survey, color[k%6], 0, 0, equates );
         ++k;
       }
+      updateViewEquates();
     }
 
     private void doSelectAt( float x_scene, float y_scene )
@@ -316,6 +323,7 @@ public class ThViewActivity extends Activity
 
 
     int mWithStation = 0;
+    ThViewCommand mSelectedCommand = null;
 
     public boolean onTouch( View view, MotionEvent rawEvent )
     {
@@ -358,10 +366,11 @@ public class ThViewActivity extends Activity
         mSaveY = y_canvas;
         doMove = true;
         if ( mWithStation == 0 ) {
-          boolean ret = mDrawingSurface.getSurveyAt( mSaveX, mSaveY );
+          boolean ret = mDrawingSurface.getSurveyAt( mSaveX, mSaveY, null );
           // Log.v("ThManager", "DOWN at " + mSaveX + " " + mSaveY + " at " + ret );
           if ( ret ) {
             mWithStation = 1;
+            mSelectedCommand = mDrawingSurface.selectedCommand();
             setTitle( "ThManager " + mDrawingSurface.selectedCommandName() + " " + mDrawingSurface.selectedStationName() );
           } else {
             setTitle( "ThManager" );
@@ -407,6 +416,7 @@ public class ThViewActivity extends Activity
         if ( mWithStation == 2 ) {
           mDrawingSurface.resetStation();
           mWithStation = 0;
+          mSelectedCommand = null;
         }
         if ( mTouchMode == MODE_ZOOM ) {
           mTouchMode = MODE_MOVE;
@@ -423,23 +433,74 @@ public class ThViewActivity extends Activity
   // ---------------------------------------------------------
 
   private MenuItem mMIequate;
+  private MenuItem mMIequates;
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) 
   {
     super.onCreateOptionsMenu( menu );
     mMIequate  = menu.add( R.string.menu_equate );
+    mMIequates = menu.add( R.string.menu_equates );
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) 
   {
-    if ( item == mMIequate ) {
-      // TODO 
-      (new ThViewEquateDialog( this, this, mApp ) ).show();
+    if ( item == mMIequates ) {
+      // this dialog add equates
+      // (new ThViewEquateDialog( this, this, mApp ) ).show(); 
+
+      // this dialog shows equates
+      (new ThEquatesDialog( this, mApp.mConfig, this )).show();
+    } else if ( item == mMIequate ) {
+      if ( mSelectedCommand == null ) {
+        Toast.makeText( this, R.string.equate_no_station, Toast.LENGTH_SHORT ).show();
+      } else {
+        // ThViewCommand cmd1 = mSelectedCommand;
+        // ThSurvey srv1 = cmd1.mSurvey;
+        ThViewStation vst1 = mSelectedCommand.mSelected;
+        // ThStation stn1 = vts1.mStation;
+        float x = vst1.x + mSelectedCommand.mXoff;
+        float y = vst1.y + mSelectedCommand.mYoff;
+        // Log.v("ThManager", "selected station " + vst1.x + " " + vst1.y + " point " + x + " " + y );
+
+        String st = mDrawingSurface.selectedStationName() + "@" + mDrawingSurface.selectedCommandName();
+        int len = st.length();
+        while ( len > 0 && st.charAt( len - 1 ) == '.' ) -- len;
+        final String st1 = st.substring(0,len);
+        if ( mDrawingSurface.getSurveyAt( x, y, mSelectedCommand ) ) {
+          // ThViewCommand cmd2 = mDrawingSurface.selectedCommand();
+          // ThSurvey srv2 = cmd2.mSurvey;
+          // ThViewStation vst2 = mDrawingSurface.selectedStation();
+          // ThStation stn2 = vts2.mStation;
+          st = mDrawingSurface.selectedStationName() + "@" + mDrawingSurface.selectedCommandName();
+          len = st.length();
+          while ( len > 0 && st.charAt( len - 1 ) == '.' ) -- len;
+          final String st2 = st.substring(0,len);
+
+          String title = "Equate " + st1 + " with " + st2;
+          new ThAlertDialog( this, mApp.getResources(), title, 
+            new DialogInterface.OnClickListener() {
+              @Override public void onClick( DialogInterface dialog, int btn ) {
+                ThEquate equate = new ThEquate();
+                equate.addStation( st1 );
+                equate.addStation( st2 );
+                mApp.mConfig.addEquate( equate );
+                updateViewEquates();
+              }
+            } );
+        } else {
+          Toast.makeText( this, R.string.equate_no_nearby, Toast.LENGTH_SHORT ).show();
+        }
+      }
     }
     return true;
+  }
+
+  void updateViewEquates()
+  {
+    mDrawingSurface.addEquates( mApp.mConfig.mEquates );
   }
 
 }

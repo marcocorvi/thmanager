@@ -30,14 +30,16 @@ class ThEquatesDialog extends Dialog
   Context mContext;
   ThEquateAdapter mThEquateAdapter;
   ThConfig mConfig;
+  ThViewActivity mActivity;
   ListView mList;
   ArrayList< ThEquate > mEquates;
 
-  ThEquatesDialog( Context context, ThConfig config )
+  ThEquatesDialog( Context context, ThConfig config, ThViewActivity activity )
   {
     super( context );
     mContext = context;
     mConfig  = config;
+    mActivity = activity;
     if ( mConfig != null && mConfig.mEquates != null ) {
       mEquates = mConfig.mEquates;
     } else {
@@ -79,6 +81,7 @@ class ThEquatesDialog extends Dialog
   {
     mEquates.remove( equate );
     updateList();
+    if ( mActivity != null ) mActivity.updateViewEquates();
   }
 
   void askRemoveEquate( final ThEquate equate )

@@ -14,10 +14,13 @@
 
     <string name="ask_delete_thconfig">Delete ThConfig file</string>
     <string name="ask_remove_equate">Remove equate %1$s ?</string>
+    <string name="equate_no_station">No station selected</string>
+    <string name="equate_no_nearby">No station nearby</string>
 
     <string name="menu_delete">Delete</string>
     <string name="menu_new">New</string>
-    <string name="menu_equate">Equates</string>
+    <string name="menu_equate">Add Equate</string>
+    <string name="menu_equates">Equates</string>
     <string name="menu_options">Options</string>
     <string name="menu_help">Help</string>
     <string name="menu_save">Save</string>

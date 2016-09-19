@@ -12,24 +12,32 @@ import android.widget.CheckBox;
 class ThViewStation
 {
   ThStation mStation;
+  ThViewCommand mCommand;
   float x;  // canvas coords
   float y;
   Path mPath;
+  boolean mEquated;
   double d;  // distance on selection
   boolean mChecked;
   CheckBox mCB;
+  float xoff; // equate: command offsets
+  float yoff;
 
-  ThViewStation( ThStation st, float x0, float y0 )
+  ThViewStation( ThStation st, ThViewCommand command, float x0, float y0, boolean equated )
   {
     mStation = st;
+    mCommand = command;
     x = x0;
     y = y0;
+    mEquated = equated;
     d = 0;
     mChecked = false;
     mCB = null;
     mPath = new Path();
     mPath.moveTo( x, y );
     mPath.lineTo( x + 10 * st.mName.length(), y );
+    xoff = 0;
+    yoff = 0;
   }
 
   String name() { return mStation.mName; }
@@ -66,11 +74,30 @@ class ThViewStation
     y += dy;
   }
 
-  void draw( Canvas canvas, Matrix matrix, Paint paint )
+  float fullX() { return x + xoff; }
+  float fullY() { return y + yoff; }
+
+  void draw( Canvas canvas, Matrix matrix, Paint paint, Paint fill, float zoom )
   {
-    Path path = new Path( mPath );
+    Path path;
+    if ( mEquated ) {
+      path = new Path();
+      path.addCircle( x, y, 0.5f/zoom, Path.Direction.CCW );
+      path.transform( matrix );
+      canvas.drawPath( path, fill );
+    }
+    path = new Path( mPath );
     path.transform( matrix );
     canvas.drawTextOnPath( mStation.mName, path, 0,0, paint );
+  }
+  
+  void drawCircle( Canvas canvas, Matrix matrix, Paint paint, float zoom )
+  {
+    Path path = new Path( );
+    // path.moveTo( x, y );
+    path.addCircle( x, y, 1.0f/zoom, Path.Direction.CCW );
+    path.transform( matrix );
+    canvas.drawPath( path, paint );
   }
   
 }

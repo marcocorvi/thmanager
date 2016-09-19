@@ -14,6 +14,7 @@ package com.topodroid.ThManager;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.PointF;
 import android.graphics.Path;
 // import android.graphics.Path.Direction;
@@ -39,10 +40,11 @@ public class ThViewCommand
   List<ThViewStation> mStations;
   Matrix mMatrix;
   Paint mPaint;
+  Paint mFillPaint;
   float mXoff, mYoff;
   float mScale;
 
-  ThViewStation getStation( String name )
+  ThViewStation getViewStation( String name )
   {
     for ( ThViewStation st : mStations ) {
       if ( st.mStation.mName.equals( name ) ) return st;
@@ -81,7 +83,8 @@ public class ThViewCommand
     mStationsArray  = new ArrayList< ThViewStation >();
     mStations     = Collections.synchronizedList( mStationsArray );
     mMatrix = new Matrix(); // identity
-    makePaint( color );
+    mPaint = makePaint( color, Paint.Style.STROKE );
+    mFillPaint = makePaint( color & 0x99cccccc, Paint.Style.FILL );
     mXoff  = xoff;
     mYoff  = yoff;
     mScale = 1.0f;
@@ -103,16 +106,16 @@ public class ThViewCommand
    */
   public void addShot( ThShot sh )
   {
-    ThViewStation st1 = getStation( sh.mFrom );
-    ThViewStation st2 = getStation( sh.mTo );
+    ThViewStation st1 = getViewStation( sh.mFrom );
+    ThViewStation st2 = getViewStation( sh.mTo );
     if ( st1 != null && st2 != null ) {
       mFixedStack.add( new ThViewPath( st1, st2 ) );
     }
   }  
   
-  public void addStation( ThStation st )
+  public void addStation( ThStation st, boolean equated )
   {
-    mStations.add( new ThViewStation( st, st.e, st.s ) );
+    mStations.add( new ThViewStation( st, this, st.e, st.s, equated ) );
   }
 
   public void executeAll( Canvas canvas, Handler preview_handler )
@@ -121,7 +124,13 @@ public class ThViewCommand
       for ( ThViewPath path : mFixedStack ) path.draw( canvas, mMatrix, mPaint );
     }
     synchronized( mStations ) {
-      for ( ThViewStation st : mStations ) st.draw( canvas, mMatrix, mPaint );
+      float zoom = mScale / 50;
+      for ( ThViewStation st : mStations ) {
+        st.draw( canvas, mMatrix, mPaint, mFillPaint, zoom );
+      }
+      if ( mSelected != null ) {
+        mSelected.drawCircle( canvas, mMatrix, mPaint, zoom );
+      }
     }
   }
 
@@ -136,8 +145,10 @@ public class ThViewCommand
     mSelected = null;
     double dmin = 100000; // FIXME a very large number
 
+    // Log.v("ThManager", name() + " get station at " + x + " " + y );
     synchronized ( mStations ) {
       for ( ThViewStation st : mStations ) {
+        // Log.v("ThManager", name() + " station " + st.mStation.mName + " " + st.x + " " + st.y );
         double d = Math.abs( st.x - x ) + Math.abs( st.y - y );
         if ( d < d0 ) {
           if ( mSelected == null || d < dmin ) {
@@ -154,16 +165,17 @@ public class ThViewCommand
     return 2 * 40.0;
   }
     
-  private void makePaint( int color )
+  private Paint makePaint( int color, Style style )
   {
-    mPaint = new Paint();
-    mPaint.setDither(true);
-    mPaint.setColor( color );
-    mPaint.setStyle(Paint.Style.STROKE);
-    mPaint.setStrokeJoin(Paint.Join.ROUND);
-    mPaint.setStrokeCap(Paint.Cap.ROUND);
-    mPaint.setStrokeWidth( 2 );
-    mPaint.setTextSize(24);
+    Paint ret = new Paint();
+    ret.setDither(true);
+    ret.setColor( color );
+    ret.setStyle( style );
+    ret.setStrokeJoin(Paint.Join.ROUND);
+    ret.setStrokeCap(Paint.Cap.ROUND);
+    ret.setStrokeWidth( 2 );
+    ret.setTextSize(24);
+    return ret;
   }
 
 }

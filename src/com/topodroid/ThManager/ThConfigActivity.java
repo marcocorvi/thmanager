@@ -57,12 +57,14 @@ public class ThConfigActivity extends Activity
     if ( extras != null ) {
       String path = extras.getString( ThManagerApp.THCONFIG_PATH );
       if ( path != null ) {
-        // Log.v( ThManagerApp.TAG, "ThConfigActivity path " + path );
-        if ( (new File(path)).exists() ) {
-          mApp.mConfig = new ThConfig( path );
-          mApp.mConfig.readThConfig();
+        File file = new File(path);
+        Log.v( ThManagerApp.TAG, "ThConfigActivity path <" + path + ">" );
+        mApp.mConfig = new ThConfig( path );
+        mApp.mConfig.readThConfig();
+        if ( file.exists() ) {
           setTitle( "PROJECT " + mApp.mConfig.toString() );
         } else {
+          mApp.mConfig = null;
           Toast.makeText( this, R.string.no_file, Toast.LENGTH_LONG ).show();
         }
       } else {
@@ -119,9 +121,9 @@ public class ThConfigActivity extends Activity
   private MenuItem mMIadd;      // add survey
   private MenuItem mMIdrop;     // drop survey(s)
   private MenuItem mMIview;     // open 2D view
-  private MenuItem mMIequate;
+  private MenuItem mMIequates;
   private MenuItem mMIdelete;   // delete
-  private MenuItem mMIoptions;
+  // private MenuItem mMIoptions;
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) 
@@ -131,20 +133,21 @@ public class ThConfigActivity extends Activity
     mMIadd     = menu.add( R.string.menu_add );
     mMIdrop    = menu.add( R.string.menu_drop );
     mMIview    = menu.add( R.string.menu_view );
-    mMIequate  = menu.add( R.string.menu_equate );
+    mMIequates = menu.add( R.string.menu_equates );
     mMIdelete  = menu.add( R.string.menu_delete);
-    mMIoptions = menu.add( R.string.menu_options );
+    // mMIoptions = menu.add( R.string.menu_options );
     return true;
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) 
   {
-    if ( item == mMIoptions ) { // OPTIONS DIALOG
-      // Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
-      // optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_ALL );
-      // startActivity( optionsIntent );
-    } else if ( item == mMIdelete ) { 
+    // if ( item == mMIoptions ) { // OPTIONS DIALOG
+    //   // Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
+    //   // optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_ALL );
+    //   // startActivity( optionsIntent );
+    // } else 
+    if ( item == mMIdelete ) { 
       askDelete();
     } else if ( item == mMIadd ) { 
       (new ThSourcesDialog(this, this)).show();
@@ -152,8 +155,8 @@ public class ThConfigActivity extends Activity
       dropSurveys();
     } else if ( item == mMIview ) { 
       startThSurveysActivity();
-    } else if  ( item == mMIequate ) { 
-      (new ThEquatesDialog( this, mApp.mConfig )).show();
+    } else if  ( item == mMIequates ) { 
+      (new ThEquatesDialog( this, mApp.mConfig, null )).show();
     }
     return true;
   }
@@ -228,7 +231,11 @@ public class ThConfigActivity extends Activity
   void doFinish( int result )
   {
     Intent intent = new Intent();
-    intent.putExtra( ThManagerApp.THCONFIG_PATH, mApp.mConfig.mFilepath );
+    if ( mApp.mConfig != null ) {
+      intent.putExtra( ThManagerApp.THCONFIG_PATH, mApp.mConfig.mFilepath );
+    } else {
+      intent.putExtra( ThManagerApp.THCONFIG_PATH, "no_path" );
+    }
     setResult( result, intent );
     finish();
   }

@@ -33,4 +33,5 @@ class ThSource extends ThFile
     mChecked = ! mChecked;
     ((CheckBox)v).setChecked( mChecked );
   }
+
 }

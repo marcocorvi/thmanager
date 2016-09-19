@@ -15,6 +15,8 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.SharedPreferences.Editor;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 import android.util.Log;
 
@@ -26,6 +28,7 @@ public class ThManagerApp extends Application
   static final String THMANAGER_SURVEY = "ThManagerSurvey";
   static final String THMANAGER_PATH = "ThManagerPath";
   static final String THCONFIG_PATH = "ThManagerConfig";
+  static String VERSION = "";
 
   final static int REQUEST_THCONFIG = 0;
   final static int REQUEST_CWD = 1;
@@ -52,6 +55,12 @@ public class ThManagerApp extends Application
   public void onCreate()
   {
     super.onCreate();
+    try {
+      VERSION = getPackageManager().getPackageInfo( getPackageName(), 0 ).versionName;
+    } catch ( NameNotFoundException e ) {
+      e.printStackTrace(); // FIXME
+    }
+
     mPrefs = PreferenceManager.getDefaultSharedPreferences( this );
     // this.prefs.registerOnSharedPreferenceChangeListener( this );
 

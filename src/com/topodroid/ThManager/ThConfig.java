@@ -10,6 +10,9 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import android.util.Log;
 
@@ -76,6 +79,12 @@ class ThConfig extends ThFile
 
 // ---------------------------------------------------------------
 // READ and WRITE
+  static String currentDate()
+  {
+    SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd", Locale.US );
+    return sdf.format( new Date() );
+  }
+
 
   void writeThConfig( boolean force )
   {
@@ -84,7 +93,7 @@ class ThConfig extends ThFile
       try {
         FileWriter fw = new FileWriter( mFilepath );
         PrintWriter pw = new PrintWriter( fw );
-        pw.format("# created by ThManager - \n");
+        pw.format("# created by ThManager %s - %s\n", ThManagerApp.VERSION, currentDate() );
         pw.format("source\n");
         pw.format("  survey %s\n", mSurveyName );
         for ( ThInput s : mInputs ) {

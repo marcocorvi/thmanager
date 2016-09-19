@@ -73,6 +73,7 @@ class ThSourceAdapter extends ArrayAdapter< ThSource >
   @Override
   public View getView( int pos, View convertView, ViewGroup parent )
   {
+    // Log.v("ThManager", "get source pos " + pos + "/" + mItems.size() );
     ThSource b = mItems.get( pos );
     if ( b == null ) return convertView;
 
@@ -82,12 +83,13 @@ class ThSourceAdapter extends ArrayAdapter< ThSource >
       holder = new ViewHolder();
       holder.checkBox = (CheckBox) convertView.findViewById( R.id.thsource_checked );
       holder.textView = (TextView) convertView.findViewById( R.id.thsource_name );
-      holder.checkBox.setOnClickListener( b );
       convertView.setTag( holder );
     } else {
       holder = (ViewHolder) convertView.getTag();
     }
+    holder.checkBox.setOnClickListener( null );
     holder.checkBox.setChecked( b.isChecked() );
+    holder.checkBox.setOnClickListener( b );
     holder.textView.setText( b.toString() );
     return convertView;
   }
