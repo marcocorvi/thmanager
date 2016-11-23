@@ -31,6 +31,8 @@
     <string name="button_ok">O.K.</string>
     <string name="button_cancel">Cancel</string>
 
+    <string name="help_title">ThManager Help</string>
+
     <string name="pref_cwd_title">Current Work Directory</string>
     <string name="pref_dist_title">Selection radius</string>
     <string name="pref_dist_summary">Selection radius</string>

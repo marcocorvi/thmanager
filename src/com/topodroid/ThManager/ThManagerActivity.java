@@ -172,6 +172,7 @@ public class ThManagerActivity extends Activity
       Intent intent = new Intent( this, ThManagerPreferences.class );
       startActivity( intent );
     } else if ( item == mMIhelp ) { 
+      new ThManagerHelpDialog( this ).show();
       // TODO
     } else if ( item == mMInew ) { 
       (new ThConfigDialog( this, this )).show();

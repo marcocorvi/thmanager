@@ -111,6 +111,9 @@ public class ThViewSurface extends SurfaceView
     {
       // Log.v("ThManager", "add equates: size " + equates.size() );
       mEquates.clear();
+      for ( ThViewCommand command : mCommandManager ) {
+        command.clearEquates();
+      }
       for ( ThEquate equate : equates ) {
         ArrayList< ThViewStation > vst = new ArrayList< ThViewStation >();
         for ( ThViewCommand command : mCommandManager ) {
@@ -127,7 +130,10 @@ public class ThViewSurface extends SurfaceView
         }
         if ( vst.size() > 1 ) {
           ThViewEquate veq = new ThViewEquate( equate );
-          for ( ThViewStation vs : vst ) veq.addViewStation( vs );
+          for ( ThViewStation vs : vst ) {
+            veq.addViewStation( vs );
+            vs.setEquated();
+          }
           mEquates.add( veq );
         }
       }

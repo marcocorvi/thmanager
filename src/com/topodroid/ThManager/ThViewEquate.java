@@ -37,8 +37,8 @@ class ThViewEquate
   {
     for ( ThViewStation st : mStations ) {
       if ( command == st.mCommand ) {
-        st.xoff += dx;
-        st.yoff += dy;
+        // st.xoff += dx;
+        // st.yoff += dy;
         makePath();
         break;
       }

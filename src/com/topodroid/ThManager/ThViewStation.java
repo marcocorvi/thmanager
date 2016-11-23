@@ -20,8 +20,8 @@ class ThViewStation
   double d;  // distance on selection
   boolean mChecked;
   CheckBox mCB;
-  float xoff; // equate: command offsets
-  float yoff;
+  private float xoff; // equate: command offsets
+  private float yoff;
 
   ThViewStation( ThStation st, ThViewCommand command, float x0, float y0, boolean equated )
   {
@@ -38,6 +38,12 @@ class ThViewStation
     mPath.lineTo( x + 10 * st.mName.length(), y );
     xoff = 0;
     yoff = 0;
+  }
+
+  void shift( float dx, float dy ) 
+  {
+    xoff += dx;
+    yoff += dy;
   }
 
   String name() { return mStation.mName; }
@@ -72,6 +78,11 @@ class ThViewStation
   {
     x += dx;
     y += dy;
+  }
+
+  void setEquated()
+  {
+    mEquated = true;
   }
 
   float fullX() { return x + xoff; }

@@ -58,6 +58,7 @@ public class ThViewCommand
   {
     mXoff += dx;
     mYoff += dy;
+    for ( ThViewStation st : mStations ) st.shift( dx, dy );
     setTransform();
   }
 
@@ -96,6 +97,11 @@ public class ThViewCommand
     mMatrix = new Matrix();
     mMatrix.postTranslate( mXoff, mYoff );
     mMatrix.postScale( mScale, mScale );
+  }
+
+  void clearEquates()
+  {
+    for ( ThViewStation st : mStations ) st.mEquated = false;
   }
 
   // oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
