@@ -27,8 +27,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.view.ViewGroup;
 import android.view.Display;
 
@@ -37,6 +41,9 @@ import android.widget.ZoomButton;
 import android.widget.ZoomButtonsController;
 import android.widget.ZoomButtonsController.OnZoomListener;
 import android.widget.Toast;
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import android.util.FloatMath;
 // import android.util.DisplayMetrics;
@@ -51,45 +58,55 @@ import android.util.Log;
 public class ThViewActivity extends Activity
                            implements View.OnTouchListener
                                       , OnZoomListener
+                                      , OnClickListener
+                                      // , OnItemClickListener
 {
-    private ThManagerApp mApp;
+  private ThManagerApp mApp;
 
-    private ThViewSurface mDrawingSurface;
-    private boolean mIsNotMultitouch;
+  HorizontalListView mListView;
+  HorizontalButtonView mButtonView1;
 
-    private boolean mEditMove;    // whether moving the selected point
-    private int mTouchMode = MODE_MOVE;
+  // Button   mImage;
+  // ListView mMenu;
+  // ArrayAdapter<String> mMenuAdapter;
+  Button[] mButton1;
 
-    ZoomButtonsController mZoomBtnsCtrl;
-    View mZoomView;
-    ZoomControls mZoomCtrl;
-    // ZoomButton mZoomOut;
-    // ZoomButton mZoomIn;
-    private float oldDist;  // zoom pointer-sapcing
+  private ThViewSurface mDrawingSurface;
+  private boolean mIsNotMultitouch;
 
-    private static final float ZOOM_INC = 1.4f;
-    private static final float ZOOM_DEC = 1.0f/ZOOM_INC;
+  private boolean mEditMove;    // whether moving the selected point
+  private int mTouchMode = MODE_MOVE;
 
-    public static final int MODE_MOVE  = 1;
-    public static final int MODE_SHIFT = 2; // change point symbol position
-    public static final int MODE_ZOOM  = 3;
+  ZoomButtonsController mZoomBtnsCtrl;
+  View mZoomView;
+  ZoomControls mZoomCtrl;
+  // ZoomButton mZoomOut;
+  // ZoomButton mZoomIn;
+  private float oldDist;  // zoom pointer-sapcing
 
-    public int mMode   = MODE_SHIFT;
-    private float mSaveX;
-    private float mSaveY;
-    private float mSave0X;  // first pointer saved coords
-    private float mSave0Y;
-    private float mSave1X;  // second pointer saved coords
-    private float mSave1Y;
-    private PointF mOffset  = new PointF( 0f, 0f );
-    // private PointF mOffset0 = new PointF( 0f, 0f );
-    private boolean doMove = false;
+  private static final float ZOOM_INC = 1.4f;
+  private static final float ZOOM_DEC = 1.0f/ZOOM_INC;
 
-    @Override
-    public void onVisibilityChanged(boolean visible)
-    {
-      mZoomBtnsCtrl.setVisible( visible );
-    }
+  public static final int MODE_MOVE  = 1;
+  public static final int MODE_SHIFT = 2; // change point symbol position
+  public static final int MODE_ZOOM  = 3;
+
+  public int mMode   = MODE_SHIFT;
+  private float mSaveX;
+  private float mSaveY;
+  private float mSave0X;  // first pointer saved coords
+  private float mSave0Y;
+  private float mSave1X;  // second pointer saved coords
+  private float mSave1Y;
+  private PointF mOffset  = new PointF( 0f, 0f );
+  // private PointF mOffset0 = new PointF( 0f, 0f );
+  private boolean doMove = false;
+
+  @Override
+  public void onVisibilityChanged(boolean visible)
+  {
+    mZoomBtnsCtrl.setVisible( visible );
+  }
 
     @Override
     public void onZoom( boolean zoomin )
@@ -163,6 +180,16 @@ public class ThViewActivity extends Activity
       setTheTitle();
 
       Bundle extras = getIntent().getExtras();
+
+      // mImage = (Button) findViewById( R.id.handle );
+      // mImage.setOnClickListener( this );
+      // mMenu = (ListView) findViewById( R.id.menu );
+      // mMenuAdapter = null;
+      // setMenuAdapter( getResources() );
+      // closeMenu();
+      // mMenu.setOnItemClickListener( this );
+      mListView = (HorizontalListView) findViewById(R.id.listview);
+      resetButtonBar();
 
       doStart();
       mDrawingSurface.transform( width/2, height/2, 1 );
@@ -428,74 +455,141 @@ public class ThViewActivity extends Activity
       return true;
     }
 
+  // -------------------------------------------------
+  boolean onMenu;
+  int mNrButton1 = 3;
+  int mNrMenus   = 2;
+  private static int izons[] = { 
+    R.drawable.iz_equate,
+    R.drawable.iz_equates,
+    R.drawable.iz_exit,
+  };
+  // private static int menus[] = { 
+  //   R.string.menu_equate,
+  //   R.string.menu_equates
+  // };
 
+  private void resetButtonBar()
+  {
+    // mImage.setBackgroundDrawable( MyButton.getButtonBackground( mApp, getResources(), R.drawable.iz_menu ) );
+
+    if ( mNrButton1 > 0 ) {
+      int size = mApp.setListViewHeight( mListView );
+      MyButton.resetCache( size );
+
+      // FIXME THMANAGER
+      // mNrButton1 = 3 + ( TDSetting.mLevelOverAdvanced ? 2 : 0 );
+      mButton1 = new Button[mNrButton1];
+
+      for (int k=0; k<mNrButton1; ++k ) {
+        mButton1[k] = MyButton.getButton( this, this, izons[k] );
+      }
+
+      // mButtonView1 = new HorizontalImageButtonView( mButton1 );
+      mButtonView1 = new HorizontalButtonView( mButton1 );
+      mListView.setAdapter( mButtonView1.mAdapter );
+    }
+  }
+
+  // private void setMenuAdapter( Resources res )
+  // {
+  //   mMenuAdapter = new ArrayAdapter<String>( this, R.layout.menu );
+  //   for ( int k=0; k<mNrMenus; ++k ) {
+  //     mMenuAdapter.add( res.getString( menus[k] ) );  
+  //   }
+  //   mMenu.setAdapter( mMenuAdapter );
+  //   mMenu.invalidate();
+  // }
+
+  // private void closeMenu()
+  // {
+  //   mMenu.setVisibility( View.GONE );
+  //   onMenu = false;
+  // }
+
+  // private void handleMenu( int pos ) 
+  // {
+  //   closeMenu();
+  //   int p = 0;
+  //   if ( p++ == pos ) {        // EQUATE
+  //     handleEquate();
+  //   } else if ( p++ == pos ) { // EQUATES
+  //     (new ThEquatesDialog( this, mApp.mConfig, null )).show();
+  //   }
+  // }
 
   // ---------------------------------------------------------
 
-  private MenuItem mMIequate;
-  private MenuItem mMIequates;
+  // private MenuItem mMIequate;
+  // private MenuItem mMIequates;
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) 
+  // @Override
+  // public boolean onCreateOptionsMenu(Menu menu) 
+  // {
+  //   super.onCreateOptionsMenu( menu );
+  //   mMIequate  = menu.add( R.string.menu_equate );
+  //   mMIequates = menu.add( R.string.menu_equates );
+  //   return true;
+  // }
+
+  // @Override
+  // public boolean onOptionsItemSelected(MenuItem item) 
+  // {
+  //   if ( item == mMIequates ) {
+  //     // this dialog add equates
+  //     // (new ThViewEquateDialog( this, this, mApp ) ).show(); 
+
+  //     // this dialog shows equates
+  //     (new ThEquatesDialog( this, mApp.mConfig, this )).show();
+  //   } else if ( item == mMIequate ) {
+  //     handleEquate();
+  //   }
+  //   return true;
+  // }
+
+
+  private void handleEquate()
   {
-    super.onCreateOptionsMenu( menu );
-    mMIequate  = menu.add( R.string.menu_equate );
-    mMIequates = menu.add( R.string.menu_equates );
-    return true;
-  }
+    if ( mSelectedCommand == null ) {
+      Toast.makeText( this, R.string.equate_no_station, Toast.LENGTH_SHORT ).show();
+    } else {
+      // ThViewCommand cmd1 = mSelectedCommand;
+      // ThSurvey srv1 = cmd1.mSurvey;
+      ThViewStation vst1 = mSelectedCommand.mSelected;
+      // ThStation stn1 = vts1.mStation;
+      float x = vst1.x + mSelectedCommand.mXoff;
+      float y = vst1.y + mSelectedCommand.mYoff;
+      // Log.v("ThManager", "selected station " + vst1.x + " " + vst1.y + " point " + x + " " + y );
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) 
-  {
-    if ( item == mMIequates ) {
-      // this dialog add equates
-      // (new ThViewEquateDialog( this, this, mApp ) ).show(); 
-
-      // this dialog shows equates
-      (new ThEquatesDialog( this, mApp.mConfig, this )).show();
-    } else if ( item == mMIequate ) {
-      if ( mSelectedCommand == null ) {
-        Toast.makeText( this, R.string.equate_no_station, Toast.LENGTH_SHORT ).show();
-      } else {
-        // ThViewCommand cmd1 = mSelectedCommand;
-        // ThSurvey srv1 = cmd1.mSurvey;
-        ThViewStation vst1 = mSelectedCommand.mSelected;
-        // ThStation stn1 = vts1.mStation;
-        float x = vst1.x + mSelectedCommand.mXoff;
-        float y = vst1.y + mSelectedCommand.mYoff;
-        // Log.v("ThManager", "selected station " + vst1.x + " " + vst1.y + " point " + x + " " + y );
-
-        String st = mDrawingSurface.selectedStationName() + "@" + mDrawingSurface.selectedCommandName();
-        int len = st.length();
+      String st = mDrawingSurface.selectedStationName() + "@" + mDrawingSurface.selectedCommandName();
+      int len = st.length();
+      while ( len > 0 && st.charAt( len - 1 ) == '.' ) -- len;
+      final String st1 = st.substring(0,len);
+      if ( mDrawingSurface.getSurveyAt( x, y, mSelectedCommand ) ) {
+        // ThViewCommand cmd2 = mDrawingSurface.selectedCommand();
+        // ThSurvey srv2 = cmd2.mSurvey;
+        // ThViewStation vst2 = mDrawingSurface.selectedStation();
+        // ThStation stn2 = vts2.mStation;
+        st = mDrawingSurface.selectedStationName() + "@" + mDrawingSurface.selectedCommandName();
+        len = st.length();
         while ( len > 0 && st.charAt( len - 1 ) == '.' ) -- len;
-        final String st1 = st.substring(0,len);
-        if ( mDrawingSurface.getSurveyAt( x, y, mSelectedCommand ) ) {
-          // ThViewCommand cmd2 = mDrawingSurface.selectedCommand();
-          // ThSurvey srv2 = cmd2.mSurvey;
-          // ThViewStation vst2 = mDrawingSurface.selectedStation();
-          // ThStation stn2 = vts2.mStation;
-          st = mDrawingSurface.selectedStationName() + "@" + mDrawingSurface.selectedCommandName();
-          len = st.length();
-          while ( len > 0 && st.charAt( len - 1 ) == '.' ) -- len;
-          final String st2 = st.substring(0,len);
+        final String st2 = st.substring(0,len);
 
-          String title = "Equate " + st1 + " with " + st2;
-          new ThAlertDialog( this, mApp.getResources(), title, 
-            new DialogInterface.OnClickListener() {
-              @Override public void onClick( DialogInterface dialog, int btn ) {
-                ThEquate equate = new ThEquate();
-                equate.addStation( st1 );
-                equate.addStation( st2 );
-                mApp.mConfig.addEquate( equate );
-                updateViewEquates();
-              }
-            } );
-        } else {
-          Toast.makeText( this, R.string.equate_no_nearby, Toast.LENGTH_SHORT ).show();
-        }
+        String title = "Equate " + st1 + " with " + st2;
+        new ThAlertDialog( this, mApp.getResources(), title, 
+          new DialogInterface.OnClickListener() {
+            @Override public void onClick( DialogInterface dialog, int btn ) {
+              ThEquate equate = new ThEquate();
+              equate.addStation( st1 );
+              equate.addStation( st2 );
+              mApp.mConfig.addEquate( equate );
+              updateViewEquates();
+            }
+          } );
+      } else {
+        Toast.makeText( this, R.string.equate_no_nearby, Toast.LENGTH_SHORT ).show();
       }
     }
-    return true;
   }
 
   void updateViewEquates()
@@ -503,4 +597,47 @@ public class ThViewActivity extends Activity
     mDrawingSurface.addEquates( mApp.mConfig.mEquates );
   }
 
+  @Override
+  public void onClick(View view)
+  { 
+    // if ( onMenu ) {
+    //   closeMenu();
+    //   return;
+    // }
+    Button b0 = (Button)view;
+
+    // if ( b0 == mImage ) {
+    //   if ( mMenu.getVisibility() == View.VISIBLE ) {
+    //     mMenu.setVisibility( View.GONE );
+    //     onMenu = false;
+    //   } else {
+    //     mMenu.setVisibility( View.VISIBLE );
+    //     onMenu = true;
+    //   }
+    //   return;
+    // }
+    int k1 = 0;
+    if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) { 
+      handleEquate();
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) { 
+      (new ThEquatesDialog( this, mApp.mConfig, this )).show();
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // EXIT
+      finish();
+    }
+  }
+
+
+  // @Override
+  // public void onItemClick( AdapterView<?> parent, View view, int pos, long id )
+  // {
+  //   CharSequence item = ((TextView) view).getText();
+  //   if ( mMenu == (ListView)parent ) {
+  //     handleMenu( pos );
+  //     return;
+  //   }
+  //   if ( onMenu ) {
+  //     closeMenu();
+  //     return;
+  //   }
+  // }
 }

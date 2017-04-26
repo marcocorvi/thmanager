@@ -15,11 +15,14 @@ import android.widget.TextView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.app.Dialog;
-// import android.widget.Button;
+import android.widget.Button;
+import android.widget.ArrayAdapter;
+
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-// import android.view.View.OnClickListener;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import android.content.Intent;
 import android.content.ActivityNotFoundException;
@@ -29,6 +32,8 @@ import android.os.AsyncTask;
 import android.app.Activity;
 // import android.net.Uri;
 
+import android.content.res.Resources;
+
 import android.view.Menu;
 // import android.view.SubMenu;
 import android.view.MenuItem;
@@ -37,13 +42,22 @@ import android.view.MenuItem;
 import android.util.Log;
 
 public class ThConfigActivity extends Activity
+                              implements OnClickListener
+                              // , OnItemClickListener
 {
   ThInputAdapter mThInputAdapter;
   ThManagerApp mApp;
 
   private FilenameFilter filterTh;
 
-  private ListView mList;
+  HorizontalListView mListView;
+  HorizontalButtonView mButtonView1;
+
+  ListView mList;
+  // Button   mImage;
+  // ListView mMenu;
+  // ArrayAdapter<String> mMenuAdapter;
+  Button[] mButton1;
 
   @Override
   public void onCreate( Bundle savedInstanceState )
@@ -78,11 +92,20 @@ public class ThConfigActivity extends Activity
       setContentView(R.layout.thconfig_activity);
       // getWindow().setLayout( LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
 
-      mList = (ListView) findViewById(R.id.list);
+      mList = (ListView) findViewById(R.id.th_list);
       // mList.setOnItemClickListener( this );
-      // mList.setLongClickable( true );
-      // mList.setOnItemLongClickListener( this );
       mList.setDividerHeight( 2 );
+
+      // mImage = (Button) findViewById( R.id.handle );
+      // mImage.setOnClickListener( this );
+      // mMenu = (ListView) findViewById( R.id.menu );
+      // mMenuAdapter = null;
+      // setMenuAdapter( getResources() );
+      // closeMenu();
+      // mMenu.setOnItemClickListener( this );
+
+      mListView = (HorizontalListView) findViewById(R.id.listview);
+      resetButtonBar();
 
       updateList();
     }
@@ -106,60 +129,138 @@ public class ThConfigActivity extends Activity
   void updateList()
   {
     if ( mApp.mConfig != null ) {
-      // Log.v("ThManager", "ThConfig input nr. " + mApp.mConfig.mInputs.size() );
+      Log.v("ThManager", "ThConfig input nr. " + mApp.mConfig.mInputs.size() );
       mThInputAdapter = new ThInputAdapter( this, R.layout.row, mApp.mConfig.mInputs );
       mList.setAdapter( mThInputAdapter );
+      mList.invalidate();
     } else {
       Toast.makeText( this, R.string.no_thconfig, Toast.LENGTH_LONG ).show();
     }
   }
 
+  
+  // -------------------------------------------------
+  // boolean onMenu;
+  int mNrButton1 = 7;
+  // int mNrMenus   = 5;
+  private static int izons[] = { 
+    R.drawable.iz_add,
+    R.drawable.iz_drop,
+    R.drawable.iz_view,
+    R.drawable.iz_equates,
+    R.drawable.iz_3d,
+    R.drawable.iz_delete,
+    R.drawable.iz_exit,
+  };
+  // private static int menus[] = { 
+  //   R.string.menu_add,
+  //   R.string.menu_drop,
+  //   R.string.menu_view,
+  //   R.string.menu_equates,
+  //   R.string.menu_delete
+  // };
+
+  private void resetButtonBar()
+  {
+    // mImage.setBackgroundDrawable( MyButton.getButtonBackground( mApp, getResources(), R.drawable.iz_menu ) );
+
+    if ( mNrButton1 > 0 ) {
+      int size = mApp.setListViewHeight( mListView );
+      MyButton.resetCache( size );
+
+      // FIXME THMANAGER
+      mButton1 = new Button[mNrButton1];
+
+      for (int k=0; k<mNrButton1; ++k ) {
+        mButton1[k] = MyButton.getButton( this, this, izons[k] );
+      }
+
+      // mButtonView1 = new HorizontalImageButtonView( mButton1 );
+      mButtonView1 = new HorizontalButtonView( mButton1 );
+      mListView.setAdapter( mButtonView1.mAdapter );
+    }
+  }
+
+  // private void setMenuAdapter( Resources res )
+  // {
+  //   mMenuAdapter = new ArrayAdapter<String>( this, R.layout.menu );
+  //   for ( int k=0; k<mNrMenus; ++k ) {
+  //     mMenuAdapter.add( res.getString( menus[k] ) );  
+  //   }
+  //   mMenu.setAdapter( mMenuAdapter );
+  //   mMenu.invalidate();
+  // }
+
+  // private void closeMenu()
+  // {
+  //   mMenu.setVisibility( View.GONE );
+  //   onMenu = false;
+  // }
+
+  // private void handleMenu( int pos ) 
+  // {
+  //   closeMenu();
+  //   int p = 0;
+  //   if ( p++ == pos ) {        // ADD
+  //     (new ThSourcesDialog(this, this)).show();
+  //   } else if ( p++ == pos ) { // DROP
+  //     dropSurveys();
+  //   } else if ( p++ == pos ) { // VIEW
+  //     startThSurveysActivity();
+  //   } else if ( p++ == pos ) { // EQUATES
+  //     (new ThEquatesDialog( this, mApp.mConfig, null )).show();
+  //   } else if ( p++ == pos ) { // DELETE
+  //     askDelete();
+  //   }
+  // }
+
+  // ----------------------------------------------
 
   // ---------------------------------------------------------------
   // OPTIONS MENU
 
-  private MenuItem mMIadd;      // add survey
-  private MenuItem mMIdrop;     // drop survey(s)
-  private MenuItem mMIview;     // open 2D view
-  private MenuItem mMIequates;
-  private MenuItem mMIdelete;   // delete
-  // private MenuItem mMIoptions;
+  // private MenuItem mMIadd;      // add survey
+  // private MenuItem mMIdrop;     // drop survey(s)
+  // private MenuItem mMIview;     // open 2D view
+  // private MenuItem mMIequates;
+  // private MenuItem mMIdelete;   // delete
+  // // private MenuItem mMIoptions;
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) 
-  {
-    super.onCreateOptionsMenu( menu );
+  // @Override
+  // public boolean onCreateOptionsMenu(Menu menu) 
+  // {
+  //   super.onCreateOptionsMenu( menu );
 
-    mMIadd     = menu.add( R.string.menu_add );
-    mMIdrop    = menu.add( R.string.menu_drop );
-    mMIview    = menu.add( R.string.menu_view );
-    mMIequates = menu.add( R.string.menu_equates );
-    mMIdelete  = menu.add( R.string.menu_delete);
-    // mMIoptions = menu.add( R.string.menu_options );
-    return true;
-  }
+  //   mMIadd     = menu.add( R.string.menu_add );
+  //   mMIdrop    = menu.add( R.string.menu_drop );
+  //   mMIview    = menu.add( R.string.menu_view );
+  //   mMIequates = menu.add( R.string.menu_equates );
+  //   mMIdelete  = menu.add( R.string.menu_delete);
+  //   // mMIoptions = menu.add( R.string.menu_options );
+  //   return true;
+  // }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) 
-  {
-    // if ( item == mMIoptions ) { // OPTIONS DIALOG
-    //   // Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
-    //   // optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_ALL );
-    //   // startActivity( optionsIntent );
-    // } else 
-    if ( item == mMIdelete ) { 
-      askDelete();
-    } else if ( item == mMIadd ) { 
-      (new ThSourcesDialog(this, this)).show();
-    } else if ( item == mMIdrop ) { 
-      dropSurveys();
-    } else if ( item == mMIview ) { 
-      startThSurveysActivity();
-    } else if  ( item == mMIequates ) { 
-      (new ThEquatesDialog( this, mApp.mConfig, null )).show();
-    }
-    return true;
-  }
+  // @Override
+  // public boolean onOptionsItemSelected(MenuItem item) 
+  // {
+  //   // if ( item == mMIoptions ) { // OPTIONS DIALOG
+  //   //   // Intent optionsIntent = new Intent( this, TopoDroidPreferences.class );
+  //   //   // optionsIntent.putExtra( TopoDroidPreferences.PREF_CATEGORY, TopoDroidPreferences.PREF_CATEGORY_ALL );
+  //   //   // startActivity( optionsIntent );
+  //   // } else 
+  //   if ( item == mMIdelete ) { 
+  //     askDelete();
+  //   } else if ( item == mMIadd ) { 
+  //     (new ThSourcesDialog(this, this)).show();
+  //   } else if ( item == mMIdrop ) { 
+  //     dropSurveys();
+  //   } else if ( item == mMIview ) { 
+  //     startThSurveysActivity();
+  //   } else if  ( item == mMIequates ) { 
+  //     (new ThEquatesDialog( this, mApp.mConfig, null )).show();
+  //   }
+  //   return true;
+  // }
 
   // ------------------------ DISPLAY -----------------------------
   private void startThSurveysActivity()
@@ -263,5 +364,63 @@ public class ThConfigActivity extends Activity
     // if ( mApp.mConfig != null ) mApp.mConfig.writeThConfig( false );
     doFinish( ThManagerApp.RESULT_THCONFIG_OK );
   }
+
+  @Override
+  public void onClick(View view)
+  { 
+    // if ( onMenu ) {
+    //   closeMenu();
+    //   return;
+    // }
+    Button b0 = (Button)view;
+
+    // if ( b0 == mImage ) {
+    //   if ( mMenu.getVisibility() == View.VISIBLE ) {
+    //     mMenu.setVisibility( View.GONE );
+    //     onMenu = false;
+    //   } else {
+    //     mMenu.setVisibility( View.VISIBLE );
+    //     onMenu = true;
+    //   }
+    //   return;
+    // }
+    int k1 = 0;
+    if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // ADD
+      (new ThSourcesDialog(this, this)).show();
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // DROP
+      dropSurveys();
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // VIEW
+      startThSurveysActivity();
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // EQUATES
+      (new ThEquatesDialog( this, mApp.mConfig, null )).show();
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // 3D
+      try {
+        Intent intent = new Intent( "Cave3D.intent.action.Launch" );
+        intent.putExtra( "survey", mApp.mConfig.mFilepath );
+        startActivity( intent );
+      } catch ( ActivityNotFoundException e ) {
+        Toast.makeText( this, "Missing Cave3D", Toast.LENGTH_SHORT ).show();
+      }
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // DELETE
+      askDelete();
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // EXIT
+      onBackPressed();
+    }
+  }
+
+
+  // @Override
+  // public void onItemClick( AdapterView<?> parent, View view, int pos, long id )
+  // {
+  //   CharSequence item = ((TextView) view).getText();
+  //   if ( mMenu == (ListView)parent ) {
+  //     handleMenu( pos );
+  //     return;
+  //   }
+  //   if ( onMenu ) {
+  //     closeMenu();
+  //     return;
+  //   }
+  // }
 
 }

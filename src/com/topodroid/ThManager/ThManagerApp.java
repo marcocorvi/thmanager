@@ -18,6 +18,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+import android.view.ViewGroup.LayoutParams;
+
 import android.util.Log;
 
 public class ThManagerApp extends Application
@@ -112,6 +114,39 @@ public class ThManagerApp extends Application
         mTextSize = Integer.parseInt( mPrefs.getString( "THMANAGER_TEXTSIZE", "24" ) );
       } catch ( NumberFormatException e ) { }
     }
+  }
+
+
+  static float getDisplayDensity( Context context )
+  {
+    return context.getResources().getSystem().getDisplayMetrics().density;
+  }
+
+  int setListViewHeight( HorizontalListView listView )
+  {
+    return ThManagerApp.setListViewHeight( this, listView );
+  }
+
+  static int setListViewHeight( Context context, HorizontalListView listView )
+  {
+    int size = getScaledSize( context );
+    if ( listView != null ) {
+      LayoutParams params = listView.getLayoutParams();
+      params.height = size + 10;
+      listView.setLayoutParams( params );
+    }
+    return size;
+  }
+
+  // default button size
+  static int getScaledSize( Context context )
+  {
+    return (int)( 42 * context.getResources().getSystem().getDisplayMetrics().density );
+  }
+
+  static int getDefaultSize( Context context )
+  {
+    return (int)( 42 * context.getResources().getSystem().getDisplayMetrics().density );
   }
 
 }
