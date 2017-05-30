@@ -89,34 +89,95 @@ class ThConfig extends ThFile
   void writeThConfig( boolean force )
   {
     if ( mRead || force ) {
-      // Log.v("ThManager", "write file " + mFilepath );
-      try {
-        FileWriter fw = new FileWriter( mFilepath );
-        PrintWriter pw = new PrintWriter( fw );
-        pw.format("# created by ThManager %s - %s\n", ThManagerApp.VERSION, currentDate() );
-        pw.format("source\n");
-        pw.format("  survey %s\n", mSurveyName );
-        for ( ThInput s : mInputs ) {
-          // FIXME path
-          String path = "../th/" + s.mFilename;
-          // Log.v("ThManager", "config write add survey " + path );
-          pw.format("    input %s\n", path );
-        }
-        for ( ThEquate equate : mEquates ) {
-          pw.format("    equate");
-          for ( String st : equate.mStations ) pw.format(" %s", st );
-          pw.format("\n");
-        }
-        pw.format("  endsurvey\n");
-        pw.format("endsource\n");
-        fw.flush();
-        fw.close();
-      } catch ( IOException e ) { 
-        Log.v("ThManager", "write file " + mFilepath + " I/O error " + e );
-      }
+      writeTherion( mFilepath );
     }
   }
 
+  String exportTherion( boolean overwrite )
+  {
+    String filepath = mFilepath.replace(".thconfig", ".th").replace("/thconfig/", "/th/");
+    File file = new File( filepath );
+    if ( file.exists() ) {
+      if ( ! overwrite ) return null;
+    } else {
+      File dir = file.getParentFile();
+      if ( dir != null ) dir.mkdirs();
+    }
+    writeTherion( filepath );
+    return filepath;
+  }
+
+  void writeTherion( String filepath )
+  {
+    try {
+      FileWriter fw = new FileWriter( filepath );
+      PrintWriter pw = new PrintWriter( fw );
+      pw.format("# created by ThManager %s - %s\n", ThManagerApp.VERSION, currentDate() );
+      pw.format("source\n");
+      pw.format("  survey %s\n", mSurveyName );
+      for ( ThInput s : mInputs ) {
+        // FIXME path
+        String path = "../th/" + s.mFilename;
+        // Log.v("ThManager", "config write add survey " + path );
+        pw.format("    input %s\n", path );
+      }
+      for ( ThEquate equate : mEquates ) {
+        pw.format("    equate");
+        for ( String st : equate.mStations ) pw.format(" %s", st );
+        pw.format("\n");
+      }
+      pw.format("  endsurvey\n");
+      pw.format("endsource\n");
+      fw.flush();
+      fw.close();
+    } catch ( IOException e ) { 
+      Log.v("ThManager", "write file " + mFilepath + " I/O error " + e );
+    }
+  }
+
+  String exportSurvex( boolean overwrite )
+  {
+    String filepath = mFilepath.replace(".thconfig", ".svx").replace("/thconfig/", "/svx/");
+    File file = new File( filepath );
+    if ( file.exists() ) {
+      if ( ! overwrite ) return null;
+    } else {
+      File dir = file.getParentFile();
+      if ( dir != null ) dir.mkdirs();
+    }
+    writeSurvex( filepath );
+    return filepath;
+  }
+
+  private String toSvxStation( String st )
+  {
+    int pos = st.indexOf('@');
+    return st.substring(pos+1) + "." + st.substring(0,pos);
+  }
+
+  void writeSurvex( String filepath )
+  {
+    try {
+      FileWriter fw = new FileWriter( filepath );
+      PrintWriter pw = new PrintWriter( fw );
+      pw.format("; created by ThManager %s - %s\n", ThManagerApp.VERSION, currentDate() );
+      // TODO EXPORT
+      for ( ThInput s : mInputs ) {
+        String path = "../svx/" + s.mFilename.replace(".th", ".svx");
+        pw.format("*include %s\n", path );
+      }
+      for ( ThEquate equate : mEquates ) {
+        pw.format("*equate");
+        for ( String st : equate.mStations ) pw.format(" %s", toSvxStation( st ) );
+        pw.format("\n");
+      }
+
+      fw.flush();
+      fw.close();
+    } catch ( IOException e ) { 
+      Log.v("ThManager", "write file " + mFilepath + " I/O error " + e );
+    }
+  }
 
   void loadFile()
   {

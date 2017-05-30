@@ -551,7 +551,9 @@ public class ThViewActivity extends Activity
   private void handleEquate()
   {
     if ( mSelectedCommand == null ) {
-      Toast.makeText( this, R.string.equate_no_station, Toast.LENGTH_SHORT ).show();
+      // Toast.makeText( this, R.string.equate_no_station, Toast.LENGTH_SHORT ).show();
+      // manually add equate
+      new ThEquateNewDialog( this, this, mDrawingSurface.mCommandManager ).show();
     } else {
       // ThViewCommand cmd1 = mSelectedCommand;
       // ThSurvey srv1 = cmd1.mSurvey;
@@ -579,11 +581,7 @@ public class ThViewActivity extends Activity
         new ThAlertDialog( this, mApp.getResources(), title, 
           new DialogInterface.OnClickListener() {
             @Override public void onClick( DialogInterface dialog, int btn ) {
-              ThEquate equate = new ThEquate();
-              equate.addStation( st1 );
-              equate.addStation( st2 );
-              mApp.mConfig.addEquate( equate );
-              updateViewEquates();
+              makeEquate( st1, st2 );
             }
           } );
       } else {
@@ -591,6 +589,29 @@ public class ThViewActivity extends Activity
       }
     }
   }
+
+  void makeEquate( String st1, String st2 )
+  {
+    ThEquate equate = new ThEquate();
+    equate.addStation( st1 );
+    equate.addStation( st2 );
+    mApp.mConfig.addEquate( equate );
+    updateViewEquates();
+  }
+
+  void makeEquate( List<String> sts )
+  {
+    if ( sts.size() <= 1 ) {
+      Toast.makeText( this, R.string.equate_no_stations, Toast.LENGTH_SHORT ).show();
+      return;
+    }
+    ThEquate equate = new ThEquate();
+    for ( String st : sts ) equate.addStation( st );
+    mApp.mConfig.addEquate( equate );
+    updateViewEquates();
+  }
+
+
 
   void updateViewEquates()
   {
@@ -617,9 +638,9 @@ public class ThViewActivity extends Activity
     //   return;
     // }
     int k1 = 0;
-    if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) { 
+    if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // EQUATE
       handleEquate();
-    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) { 
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // SHOW EQUATES
       (new ThEquatesDialog( this, mApp.mConfig, this )).show();
     } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // EXIT
       finish();

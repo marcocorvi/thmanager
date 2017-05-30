@@ -30,7 +30,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.AsyncTask;
 import android.app.Activity;
-// import android.net.Uri;
 
 import android.content.res.Resources;
 
@@ -38,6 +37,8 @@ import android.view.Menu;
 // import android.view.SubMenu;
 import android.view.MenuItem;
 // import android.view.MenuInflater;
+
+import android.net.Uri;
 
 import android.util.Log;
 
@@ -49,6 +50,8 @@ public class ThConfigActivity extends Activity
   ThManagerApp mApp;
 
   private FilenameFilter filterTh;
+
+  private static String[] mExportTypes = { "Therion", "Survex" };
 
   HorizontalListView mListView;
   HorizontalButtonView mButtonView1;
@@ -141,7 +144,7 @@ public class ThConfigActivity extends Activity
   
   // -------------------------------------------------
   // boolean onMenu;
-  int mNrButton1 = 7;
+  int mNrButton1 = 8;
   // int mNrMenus   = 5;
   private static int izons[] = { 
     R.drawable.iz_add,
@@ -149,6 +152,8 @@ public class ThConfigActivity extends Activity
     R.drawable.iz_view,
     R.drawable.iz_equates,
     R.drawable.iz_3d,
+    R.drawable.iz_export,
+    // R.drawable.iz_note,
     R.drawable.iz_delete,
     R.drawable.iz_exit,
   };
@@ -401,10 +406,41 @@ public class ThConfigActivity extends Activity
       } catch ( ActivityNotFoundException e ) {
         Toast.makeText( this, "Missing Cave3D", Toast.LENGTH_SHORT ).show();
       }
+    } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // EXPORT
+      if ( mApp.mConfig != null ) {
+        new ExportDialog( this, this, mExportTypes, R.string.title_export ).show();
+      }
+    // } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // EXTERNAL EDIT
+    //   if ( mApp.mConfig != null ) {
+    //     try {
+    //       Intent intent = new Intent( Intent.ACTION_EDIT );
+    //       Uri uri = Uri.fromFile( new File( mApp.mConfig.mFilepath ) );
+    //       intent.setDataAndType( uri, "text/plain" );
+    //       startActivity( intent );
+    //     } catch ( ActivityNotFoundException e ) {
+    //       Toast.makeText( this, "Missing edit apk", Toast.LENGTH_SHORT ).show();
+    //     }
+    //   }
     } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // DELETE
       askDelete();
     } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // EXIT
       onBackPressed();
+    }
+  }
+
+  void doExport( String type, boolean overwrite )
+  {
+    String filepath = null;
+    if ( type.equals("Therion") ) {
+       filepath = mApp.mConfig.exportTherion( overwrite );
+    } else if ( type.equals("Survex") ) {
+       filepath = mApp.mConfig.exportSurvex( overwrite );
+    }
+    if ( filepath != null ) {
+      Toast.makeText( this, String.format( getResources().getString(R.string.exported), filepath ),
+            Toast.LENGTH_SHORT ).show();
+    } else {
+      Toast.makeText( this, R.string.export_failed, Toast.LENGTH_SHORT ).show();
     }
   }
 

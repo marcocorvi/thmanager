@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textSize="18sp"
+    android:background="#ff000000"
     android:singleLine="true"
     android:typeface="monospace"
     android:padding="5dp"
