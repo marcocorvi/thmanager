@@ -81,11 +81,11 @@ class ThInputAdapter extends ArrayAdapter< ThInput >
       holder = new ViewHolder();
       holder.checkBox = (CheckBox) convertView.findViewById( R.id.thinput_checked );
       holder.textView = (TextView) convertView.findViewById( R.id.thinput_name );
-      holder.checkBox.setOnClickListener( b );
       convertView.setTag( holder );
     } else {
       holder = (ViewHolder) convertView.getTag();
     }
+    holder.checkBox.setOnClickListener( b );
     holder.checkBox.setChecked( b.isChecked() );
     holder.textView.setText( b.toString() );
     return convertView;
