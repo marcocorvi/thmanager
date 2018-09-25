@@ -295,7 +295,7 @@ public class ThViewActivity extends Activity
       if ( np < 2 ) return 0.0f;
       float x = ev.getX(1) - ev.getX(0);
       float y = ev.getY(1) - ev.getY(0);
-      return FloatMath.sqrt(x*x + y*y);
+      return (float)Math.sqrt(x*x + y*y);
     }
 
     void saveEventPoint( WrapMotionEvent ev )

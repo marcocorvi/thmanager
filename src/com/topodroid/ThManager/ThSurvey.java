@@ -135,10 +135,10 @@ public class ThSurvey
 	  mStartStation = fs;
           mStations.add( mStartStation );
           // angles are already in radians
-          float h = FloatMath.cos( sh.mClino ) * sh.mLength;
-          float v = FloatMath.sin( sh.mClino ) * sh.mLength;
-          float e =   h * FloatMath.sin( sh.mBearing );
-          float s = - h * FloatMath.cos( sh.mBearing );
+          float h = (float)Math.cos( sh.mClino ) * sh.mLength;
+          float v = (float)Math.sin( sh.mClino ) * sh.mLength;
+          float e =   h * (float)Math.sin( sh.mBearing );
+          float s = - h * (float)Math.cos( sh.mBearing );
           ts = new ThStation( sh.mTo, e, s, h*sh.mExtend, v, this );
           mStations.add( ts );
           sh.setStations( fs, ts );
@@ -148,10 +148,10 @@ public class ThSurvey
           ts = getStation( sh.mTo );
           if ( fs != null ) {
             if ( ts == null ) {  // FROM --> TO 
-              float h = FloatMath.cos( sh.mClino ) * sh.mLength;
-              float v = FloatMath.sin( sh.mClino ) * sh.mLength;
-              float e =   h * FloatMath.sin( sh.mBearing );
-              float s = - h * FloatMath.cos( sh.mBearing );
+              float h = (float)Math.cos( sh.mClino ) * sh.mLength;
+              float v = (float)Math.sin( sh.mClino ) * sh.mLength;
+              float e =   h * (float)Math.sin( sh.mBearing );
+              float s = - h * (float)Math.cos( sh.mBearing );
               ts = new ThStation( sh.mTo, fs.e+e, fs.s+s, fs.h+h*sh.mExtend, fs.v+v, this );
               mStations.add( ts );
               repeat = true;
@@ -160,10 +160,10 @@ public class ThSurvey
 	    }
             sh.setStations( fs, ts );
           } else if ( ts != null ) {
-            float h = FloatMath.cos( sh.mClino ) * sh.mLength;
-            float v = FloatMath.sin( sh.mClino ) * sh.mLength;
-            float e =   h * FloatMath.sin( sh.mBearing );
-            float s = - h * FloatMath.cos( sh.mBearing );
+            float h = (float)Math.cos( sh.mClino ) * sh.mLength;
+            float v = (float)Math.sin( sh.mClino ) * sh.mLength;
+            float e =   h * (float)Math.sin( sh.mBearing );
+            float s = - h * (float)Math.cos( sh.mBearing );
             fs = new ThStation( sh.mFrom, ts.e-e, ts.s-s, ts.h-h*sh.mExtend, ts.v-v, this );
             mStations.add( fs );
             sh.setStations( fs, ts );
@@ -176,10 +176,10 @@ public class ThSurvey
 	      if ( eq.contains( sh.mFrom ) ) {
 		for ( String st : eq.mStations ) if ( ! st.equals( sh.mFrom  ) ) {
 		  if ( ( fs = getStation( st ) ) != null ) {
-                    float h = FloatMath.cos( sh.mClino ) * sh.mLength;
-                    float v = FloatMath.sin( sh.mClino ) * sh.mLength;
-                    float e =   h * FloatMath.sin( sh.mBearing );
-                    float s = - h * FloatMath.cos( sh.mBearing );
+                    float h = (float)Math.cos( sh.mClino ) * sh.mLength;
+                    float v = (float)Math.sin( sh.mClino ) * sh.mLength;
+                    float e =   h * (float)Math.sin( sh.mBearing );
+                    float s = - h * (float)Math.cos( sh.mBearing );
                     ts = new ThStation( sh.mTo, fs.e+e, fs.s+s, fs.h+h*sh.mExtend, fs.v+v, this );
                     mStations.add( ts );
                     sh.setStations( fs, ts );
@@ -190,10 +190,10 @@ public class ThSurvey
               } else if ( eq.contains( sh.mTo ) ) {
 	        for ( String st : eq.mStations ) if ( ! st.equals( sh.mTo ) ) {
 		  if ( ( ts = getStation( st ) ) != null ) {
-                    float h = FloatMath.cos( sh.mClino ) * sh.mLength;
-                    float v = FloatMath.sin( sh.mClino ) * sh.mLength;
-                    float e =   h * FloatMath.sin( sh.mBearing );
-                    float s = - h * FloatMath.cos( sh.mBearing );
+                    float h = (float)Math.cos( sh.mClino ) * sh.mLength;
+                    float v = (float)Math.sin( sh.mClino ) * sh.mLength;
+                    float e =   h * (float)Math.sin( sh.mBearing );
+                    float s = - h * (float)Math.cos( sh.mBearing );
                     fs = new ThStation( sh.mFrom, ts.e-e, ts.s-s, ts.h-h*sh.mExtend, ts.v-v, this );
                     mStations.add( fs );
                     sh.setStations( fs, ts );

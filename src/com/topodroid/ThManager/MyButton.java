@@ -37,9 +37,9 @@ import java.util.Random;
 
 public class MyButton
 {
-  static int mSize = 42;
+  static private int mSize = 42;
 
-  static Random rand = new Random();
+  // static Random rand = new Random();
 
   // CACHE : using a cache for the BitmapDrawing does not dramatically improve perfoormanaces
   // static SparseArray<BitmapDrawable> mBitmapCache = new SparseArray<BitmapDrawable>();
@@ -47,7 +47,7 @@ public class MyButton
   // called with context = mApp
   static void resetCache( /* Context context, */ int size )
   {
-    mSize    = size;
+    mSize = size;
     // mBitmapCache.clear();
   }
 
@@ -64,7 +64,7 @@ public class MyButton
   {
     BitmapDrawable ret = null;
     // ret = mBitmapCache.get( res_id );
-    if ( ret == null ) {    
+    // if ( ret == null ) {    
       try {
         Bitmap bm1 = BitmapFactory.decodeResource( res, res_id );
         Bitmap bmx = Bitmap.createScaledBitmap( bm1, mSize, mSize, false );
@@ -82,7 +82,7 @@ public class MyButton
         // } catch ( IOException e ) {
         // }
       }
-    }
+    // }
     return ret;
   }
 
