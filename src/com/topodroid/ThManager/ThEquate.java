@@ -37,6 +37,32 @@ class ThEquate
     return null;
   }
 
+  int dropStations( String survey )
+  {
+    ArrayList< String > stations = new ArrayList< String >();
+    for ( String name : mStations ) {
+      String[] names = name.split("@");
+      if ( names.length > 1 && survey.equals( names[1] ) ) {
+	// Log.v("ThManager", "equate drop station >" + name + "<" );
+      } else {
+	stations.add( name );
+      }
+    }
+    mStations = stations;
+    // Log.v("ThManager", "equate " + stationsString() + " size " + size() );
+    return mStations.size();
+  }
+
+  // boolean containsStations( String survey ) 
+  // {
+  //   for ( String name : mStations ) {
+  //     String[] names = name.split("@");
+  //     if ( names.length > 1 && survey.equals( names[1] ) ) return true;
+  //   }
+  //   return false;
+  // }
+
+
   void addStation( String station ) { mStations.add( station ); }
 
   int size() { return mStations.size(); }

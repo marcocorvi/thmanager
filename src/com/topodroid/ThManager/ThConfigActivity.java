@@ -19,10 +19,12 @@ import android.widget.Button;
 import android.widget.ArrayAdapter;
 
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
+// import android.view.ViewGroup.LayoutParams;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 
 import android.content.Intent;
 import android.content.ActivityNotFoundException;
@@ -53,8 +55,8 @@ public class ThConfigActivity extends Activity
 
   private static String[] mExportTypes = { "Therion", "Survex" };
 
-  HorizontalListView mListView;
-  HorizontalButtonView mButtonView1;
+  // HorizontalListView mListView;
+  // HorizontalButtonView mButtonView1;
 
   ListView mList;
   // Button   mImage;
@@ -107,7 +109,7 @@ public class ThConfigActivity extends Activity
       // closeMenu();
       // mMenu.setOnItemClickListener( this );
 
-      mListView = (HorizontalListView) findViewById(R.id.listview);
+      // mListView = (HorizontalListView) findViewById(R.id.listview);
       resetButtonBar();
 
       updateList();
@@ -132,7 +134,7 @@ public class ThConfigActivity extends Activity
   void updateList()
   {
     if ( mApp.mConfig != null ) {
-      Log.v("ThManager", "ThConfig input nr. " + mApp.mConfig.mInputs.size() );
+      // Log.v("ThManager", "ThConfig input nr. " + mApp.mConfig.mInputs.size() );
       mThInputAdapter = new ThInputAdapter( this, R.layout.row, mApp.mConfig.mInputs );
       mList.setAdapter( mThInputAdapter );
       mList.invalidate();
@@ -170,19 +172,26 @@ public class ThConfigActivity extends Activity
     // mImage.setBackgroundDrawable( MyButton.getButtonBackground( mApp, getResources(), R.drawable.iz_menu ) );
 
     if ( mNrButton1 > 0 ) {
-      int size = mApp.setListViewHeight( mListView );
-      MyButton.resetCache( size );
+      // int size = mApp.setListViewHeight( mListView );
+      // MyButton.resetCache( size );
+      int size = ThManagerApp.getScaledSize( this );
+      LinearLayout layout = (LinearLayout) findViewById( R.id.list_layout );
+      layout.setMinimumHeight( size + 40 );
+      LayoutParams lp = new LayoutParams( LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT );
+      lp.setMargins( 10, 10, 10, 10 );
+      lp.width  = size;
+      lp.height = size;
 
       // FIXME THMANAGER
       mButton1 = new Button[mNrButton1];
 
       for (int k=0; k<mNrButton1; ++k ) {
-        mButton1[k] = MyButton.getButton( this, this, izons[k] );
+        mButton1[k] = MyButton.getButton( this, this, size, izons[k] );
+        layout.addView( mButton1[k], lp );
       }
 
-      // mButtonView1 = new HorizontalImageButtonView( mButton1 );
-      mButtonView1 = new HorizontalButtonView( mButton1 );
-      mListView.setAdapter( mButtonView1.mAdapter );
+      // mButtonView1 = new HorizontalButtonView( mButton1 );
+      // mListView.setAdapter( mButtonView1.mAdapter );
     }
   }
 
@@ -348,16 +357,26 @@ public class ThConfigActivity extends Activity
   // ---------------------- DROP SURVEYS ----------------------------
   void dropSurveys()
   {
-    ArrayList< ThInput > inputs = new ArrayList< ThInput >();
-    final Iterator it = mApp.mConfig.mInputs.iterator();
-    while ( it.hasNext() ) {
-      ThInput input = (ThInput) it.next();
-      if ( ! input.isChecked() ) {
-        inputs.add( input );
-      }
-    }
-    mApp.mConfig.mInputs = inputs;
-    updateList();
+    new ThAlertDialog( this, getResources(), getResources().getString( R.string.title_drop ), 
+      new DialogInterface.OnClickListener() {
+	@Override
+	public void onClick( DialogInterface dialog, int btn ) {
+          ArrayList< ThInput > inputs = new ArrayList< ThInput >();
+          final Iterator it = mApp.mConfig.mInputs.iterator();
+          while ( it.hasNext() ) {
+            ThInput input = (ThInput) it.next();
+            if ( ! input.isChecked() ) {
+              inputs.add( input );
+            } else {
+              String survey = input.getSurveyName();
+              // Log.v("ThManager", "drop survey >" + survey + "<" );
+              mApp.mConfig.dropEquates( survey );
+            }
+          }
+          mApp.mConfig.mInputs = inputs;
+          updateList();
+	} 
+    } );
   }
 
   // ---------------------- SAVE -------------------------------------

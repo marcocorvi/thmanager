@@ -2,6 +2,9 @@
 <resources>
     <string name="app_name">ThManager</string>
 
+    <string name="name_invalid">Invalid name</string>
+    <string name="name_exists">Existing file</string>
+
     <string name="no_editor">Editor not found</string>
     <string name="no_file">File not found</string>
     <string name="no_extra">Missing file extra</string>
@@ -35,10 +38,13 @@
 
     <string name="overwrite">overwrite</string>
 
-    <string name="help_title">ThManager Help</string>
 
+    <string name="title_help">ThManager v. %1$s</string>
     <string name="title_export">Export project as ...</string>
     <string name="title_equate_new">Add equate ...</string>
+    <string name="title_cwd">Current Work Directory</string>
+    <string name="title_settings">ThManager Settings</string>
+    <string name="title_drop">Drop surveys ?</string>
 
     <string name="exported">Saved file %1$s</string>
     <string name="export_failed">Failed export</string>
@@ -51,4 +57,8 @@
     <string name="pref_textsize_summary">Station name size</string>
     <string name="pref_textsize_message">Station name size</string>
 
+    <string name="ThManagerPerms">Permissions</string>
+    <string name="perms_mandatory">ThManager cannot run without these permissions:</string>
+    <string name="perms_optional">ThManager may fail without these permissions:</string>
+    <string name="welcome_title">ThManager %1$s</string>
 </resources>

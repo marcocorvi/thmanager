@@ -25,6 +25,13 @@ class ThInput extends ThFile
     mChecked  = false;
   }
 
+  String getSurveyName()
+  {
+    String ret = super.toString(); // FIXME use filename without extension
+    int pos = ret.lastIndexOf(".");
+    return ( pos >= 0 )? ret.substring(0, pos) : ret;
+  }
+
   // void toggleChecekd() { mChecked = ! mChecked; }
 
   boolean isChecked() { return mChecked; }

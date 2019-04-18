@@ -28,8 +28,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
+// import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -63,8 +64,8 @@ public class ThViewActivity extends Activity
 {
   private ThManagerApp mApp;
 
-  HorizontalListView mListView;
-  HorizontalButtonView mButtonView1;
+  // HorizontalListView mListView;
+  // HorizontalButtonView mButtonView1;
 
   // Button   mImage;
   // ListView mMenu;
@@ -188,7 +189,7 @@ public class ThViewActivity extends Activity
       // setMenuAdapter( getResources() );
       // closeMenu();
       // mMenu.setOnItemClickListener( this );
-      mListView = (HorizontalListView) findViewById(R.id.listview);
+      // mListView = (HorizontalListView) findViewById(R.id.listview);
       resetButtonBar();
 
       doStart();
@@ -474,20 +475,26 @@ public class ThViewActivity extends Activity
     // mImage.setBackgroundDrawable( MyButton.getButtonBackground( mApp, getResources(), R.drawable.iz_menu ) );
 
     if ( mNrButton1 > 0 ) {
-      int size = mApp.setListViewHeight( mListView );
-      MyButton.resetCache( size );
+      // int size = mApp.setListViewHeight( mListView );
+      // MyButton.resetCache( size );
+      int size = ThManagerApp.getScaledSize( this );
+      LinearLayout layout = (LinearLayout) findViewById( R.id.list_layout );
+      layout.setMinimumHeight( size + 40 );
+      LayoutParams lp = new LayoutParams( LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT );
+      lp.setMargins( 10, 10, 10, 10 );
+      lp.width  = size;
+      lp.height = size;
 
       // FIXME THMANAGER
-      // mNrButton1 = 3 + ( TDSetting.mLevelOverAdvanced ? 2 : 0 );
       mButton1 = new Button[mNrButton1];
 
       for (int k=0; k<mNrButton1; ++k ) {
-        mButton1[k] = MyButton.getButton( this, this, izons[k] );
+        mButton1[k] = MyButton.getButton( this, this, size, izons[k] );
+        layout.addView( mButton1[k], lp );
       }
 
-      // mButtonView1 = new HorizontalImageButtonView( mButton1 );
-      mButtonView1 = new HorizontalButtonView( mButton1 );
-      mListView.setAdapter( mButtonView1.mAdapter );
+      // mButtonView1 = new HorizontalButtonView( mButton1 );
+      // mListView.setAdapter( mButtonView1.mAdapter );
     }
   }
 
@@ -595,6 +602,7 @@ public class ThViewActivity extends Activity
     ThEquate equate = new ThEquate();
     equate.addStation( st1 );
     equate.addStation( st2 );
+    // Log.v("ThManager", "add equate: " + equate.stationsString() );
     mApp.mConfig.addEquate( equate );
     updateViewEquates();
   }
@@ -607,6 +615,7 @@ public class ThViewActivity extends Activity
     }
     ThEquate equate = new ThEquate();
     for ( String st : sts ) equate.addStation( st );
+    // Log.v("ThManager", "add equate: " + equate.stationsString() );
     mApp.mConfig.addEquate( equate );
     updateViewEquates();
   }

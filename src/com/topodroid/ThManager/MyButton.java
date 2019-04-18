@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.TextView;
 import android.view.View;
@@ -37,7 +38,7 @@ import java.util.Random;
 
 public class MyButton
 {
-  static private int mSize = 42;
+  // static private int mSize = 48;
 
   // static Random rand = new Random();
 
@@ -45,30 +46,45 @@ public class MyButton
   // static SparseArray<BitmapDrawable> mBitmapCache = new SparseArray<BitmapDrawable>();
 
   // called with context = mApp
-  static void resetCache( /* Context context, */ int size )
-  {
-    mSize = size;
-    // mBitmapCache.clear();
-  }
+  // static void resetCache( /* Context context, */ int size )
+  // {
+  //   mSize = size;
+  //   // mBitmapCache.clear();
+  //   // Log.v("ThManager", "set size " + size );
+  // }
 
-  static Button getButton( Context ctx, OnClickListener click, int res_id )
+  static Button getButton( Context ctx, OnClickListener click, int size, int res_id )
   {
     Button ret = new Button( ctx );
     ret.setPadding(0,0,0,0);
     ret.setOnClickListener( click );
-    ret.setBackgroundDrawable( getButtonBackground( ctx, ctx.getResources(), res_id ) );
+    ret.setBackgroundDrawable( getButtonBackground( ctx, ctx.getResources(), size, res_id ) );
     return ret;
   }
 
-  static BitmapDrawable getButtonBackground( Context ctx, Resources res, int res_id )
+  static Bitmap getButtonBitmap( Resources res, int size, int res_id )
   {
+    Bitmap ret = null;
+    try {
+      Bitmap bm1 = BitmapFactory.decodeResource( res, res_id );
+      ret = Bitmap.createScaledBitmap( bm1, size, size, false );
+    } catch ( OutOfMemoryError err ) {
+      Log.e("ThManager", "out of memory: " + err.getMessage() );
+    }
+    return ret;
+  }
+
+  static BitmapDrawable getButtonBackground( Context ctx, Resources res, int size, int res_id )
+  {
+    // Log.v("ThManager", "get bkgnd " + size );
     BitmapDrawable ret = null;
     // ret = mBitmapCache.get( res_id );
     // if ( ret == null ) {    
       try {
         Bitmap bm1 = BitmapFactory.decodeResource( res, res_id );
-        Bitmap bmx = Bitmap.createScaledBitmap( bm1, mSize, mSize, false );
+        Bitmap bmx = Bitmap.createScaledBitmap( bm1, size, size, false );
         ret = new BitmapDrawable( res, bmx );
+        // Log.v("ThManager", "bm1 " + bm1.getWidth() + " bmx " + bmx.getWidth() + " size " + size );
         // mBitmapCache.append( res_id, ret );
       } catch ( OutOfMemoryError err ) {
         Log.e("ThManager", "out of memory: " + err.getMessage() );

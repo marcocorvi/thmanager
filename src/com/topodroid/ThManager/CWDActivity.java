@@ -37,11 +37,13 @@ import android.view.WindowManager.LayoutParams;
 
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import android.util.Log;
 
 public class CWDActivity extends Activity
                                implements OnItemClickListener
+                               , OnItemLongClickListener
 {
   private ThManagerApp mApp;
 
@@ -80,6 +82,7 @@ public class CWDActivity extends Activity
     }
     mList.setAdapter( adapter );
     mList.setOnItemClickListener( this );
+    mList.setOnItemLongClickListener( this );
     mList.setDividerHeight( 2 );
 
     mETcwd.setText( mApp.mCWD );
@@ -89,9 +92,22 @@ public class CWDActivity extends Activity
   // list items click
 
   @Override 
+  public boolean  onItemLongClick(AdapterView<?> parent, View view, int pos, long id)
+  {
+    onItemClick( parent, view, pos, id );
+    return true;
+  }
+
+  @Override 
   public void onItemClick(AdapterView<?> parent, View view, int pos, long id)
   {
     CharSequence item = ((TextView) view).getText();
+    mETcwd.setText( item );
+  }
+
+  public void onEntryClick( View v )
+  {
+    CharSequence item = ((TextView) v).getText();
     mETcwd.setText( item );
   }
 
@@ -109,6 +125,8 @@ public class CWDActivity extends Activity
     mETcwd = (EditText) findViewById( R.id.cwd_text );
     
     updateDisplay();
+
+    setTitle( R.string.title_cwd );
   }
 
 

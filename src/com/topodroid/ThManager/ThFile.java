@@ -6,7 +6,7 @@ import android.util.Log;
 
 class ThFile 
 {
-  String mName;                // name (only for display purposes)
+  String mName;                // name (only for display purposes): filename without extension
   String mFilepath;            // thconfig file (fullpath)
 
   public String toString() { return mName; }

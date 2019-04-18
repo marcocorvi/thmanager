@@ -32,13 +32,32 @@ class ThConfig extends ThFile
     // Log.v("ThManager", "ThConfig cstr filepath " + filepath );
     mParentDir = (new File( filepath )).getParentFile().getName() + "/";
     mSurvey  = null;
-    mInputs = new ArrayList< ThInput >();
+    mInputs  = new ArrayList< ThInput >();
     mEquates = new ArrayList< ThEquate >();
     mRead = false;
   }
 
-  void addEquate( ThEquate equate ) { mEquates.add( equate ); }
+  void dropEquates( String survey )
+  {
+    // Log.v("ThManager", "drop equates with " + survey + " before " + mEquates.size() );
+    if ( survey == null || survey.length() == 0 ) return;
+    ArrayList< ThEquate > equates = new ArrayList< ThEquate >();
+    for ( ThEquate equate : mEquates ) {
+      if ( equate.dropStations( survey ) > 1 ) {
+        equates.add( equate );
+      }
+    }
+    mEquates = equates;
+    // Log.v("ThManager", "dropped equates with " + survey + " after " + mEquates.size() );
+  }
 
+  void addEquate( ThEquate equate ) 
+  {
+    mEquates.add( equate );
+    // Log.v("ThManager", "nr. equates " + mEquates.size() );
+  }
+
+  // unconditionally remove an equate
   void removeEquate( ThEquate equate ) { mEquates.remove( equate ); }
 
   void readThConfig()
@@ -131,7 +150,7 @@ class ThConfig extends ThFile
       fw.flush();
       fw.close();
     } catch ( IOException e ) { 
-      Log.v("ThManager", "write file " + mFilepath + " I/O error " + e );
+      Log.e("ThManager", "write file " + mFilepath + " I/O error " + e.getMessage() );
     }
   }
 
@@ -175,7 +194,7 @@ class ThConfig extends ThFile
       fw.flush();
       fw.close();
     } catch ( IOException e ) { 
-      Log.v("ThManager", "write file " + mFilepath + " I/O error " + e );
+      Log.e("ThManager", "write file " + mFilepath + " I/O error " + e.getMessage() );
     }
   }
 
@@ -249,7 +268,7 @@ class ThConfig extends ThFile
       fr.close();
     } catch ( IOException e ) {
       // TODO
-      Log.e( ThManagerApp.TAG, "exception " + e.toString() );
+      Log.e( ThManagerApp.TAG, "exception " + e.getMessage() );
     }
     // Log.v( "ThManager", "ThConfig read file: nr. sources " + mInputs.size() );
   }

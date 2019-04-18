@@ -8,16 +8,17 @@
      >
 
     <EditText android:id="@+id/cwd_text"
+      style="@style/edit_text"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:textSize="12sp"
     />
 
    <ListView android:id="@+id/cwd_list"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:stackFromBottom="false"
-          android:paddingTop="25dp"
+      style="@style/list_data"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:stackFromBottom="false"
     />  
 
 </LinearLayout>

@@ -71,7 +71,7 @@ public class ThManagerHelpDialog extends Dialog // Activity
     setContentView( R.layout.thmanager_help_dialog );
     getWindow().setLayout( LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT );
 
-    setTitle( R.string.help_title );
+    setTitle( String.format( mContext.getResources().getString(R.string.title_help), ThManagerApp.VERSION ) );
 
     mTVtext = (TextView) findViewById(R.id.help );
 

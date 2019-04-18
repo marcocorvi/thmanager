@@ -50,6 +50,8 @@ public class ThManagerPreferences extends PreferenceActivity
             return true;
           }
         } );
+
+    setTitle( R.string.title_settings );
   }
 
   public void onActivityResult( int request, int result, Intent intent ) 

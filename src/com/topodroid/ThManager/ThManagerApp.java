@@ -49,6 +49,7 @@ public class ThManagerApp extends Application
   ArrayList< ThSurvey > mViewSurveys = null;
   ThConfig mConfig = null;                    // current config file
   ThManagerActivity mActivity;
+  static int mCheckPerms;
 
   static double mDist = 40;
   static int mTextSize = 24;
@@ -74,9 +75,12 @@ public class ThManagerApp extends Application
       mTextSize = Integer.parseInt( mPrefs.getString( "THMANAGER_TEXTSIZE", "24" ) );
     } catch ( NumberFormatException e ) { }
 
-    ThManagerPath.setPaths( mCWD );
-    ThManagerPath.setFilters(); 
-    mViewSurveys = null;
+    mCheckPerms = FeatureChecker.checkPermissions( this );
+    if ( mCheckPerms >= 0 ) {
+      ThManagerPath.setPaths( mCWD );
+      ThManagerPath.setFilters(); 
+      mViewSurveys = null;
+    }
   }
 
   // static boolean deleteThConfigFile( String filepath )
@@ -84,7 +88,7 @@ public class ThManagerApp extends Application
   //   // Log.v("ThManager", "Th App delete " + filepath );
   //   boolean ret = (new File( filepath )).delete();
   //   if ( ! ret ) {
-  //     Log.v("ThManager", "Th App delete FAILED");
+  //     Log.e("ThManager", "Th App delete FAILED");
   //   }
   //   return ret;
   // }
@@ -122,31 +126,31 @@ public class ThManagerApp extends Application
     return context.getResources().getSystem().getDisplayMetrics().density;
   }
 
-  int setListViewHeight( HorizontalListView listView )
-  {
-    return ThManagerApp.setListViewHeight( this, listView );
-  }
+  // int setListViewHeight( HorizontalListView listView )
+  // {
+  //   return ThManagerApp.setListViewHeight( this, listView );
+  // }
 
-  static int setListViewHeight( Context context, HorizontalListView listView )
-  {
-    int size = getScaledSize( context );
-    if ( listView != null ) {
-      LayoutParams params = listView.getLayoutParams();
-      params.height = size + 10;
-      listView.setLayoutParams( params );
-    }
-    return size;
-  }
+  // static int setListViewHeight( Context context, HorizontalListView listView )
+  // {
+  //   int size = getScaledSize( context );
+  //   if ( listView != null ) {
+  //     LayoutParams params = listView.getLayoutParams();
+  //     params.height = size + 10;
+  //     listView.setLayoutParams( params );
+  //   }
+  //   return size;
+  // }
 
   // default button size
   static int getScaledSize( Context context )
   {
-    return (int)( 42 * context.getResources().getSystem().getDisplayMetrics().density );
+    return (int)( 48 * context.getResources().getSystem().getDisplayMetrics().density * 0.86f );
   }
 
   static int getDefaultSize( Context context )
   {
-    return (int)( 42 * context.getResources().getSystem().getDisplayMetrics().density );
+    return (int)( 48 * context.getResources().getSystem().getDisplayMetrics().density );
   }
 
 }

@@ -16,11 +16,12 @@
         / -->
    					  
     <EditText android:id="@+id/label_text"
-        android:layout_marginTop="2dp"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content" 
-        android:singleLine="true"
-        />
+      style="@style/edit_text"
+      android:layout_marginTop="2dp"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content" 
+      android:singleLine="true"
+      />
    		
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
       android:layout_width="wrap_content" 
@@ -31,9 +32,9 @@
         android:layout_width="wrap_content" 
         android:layout_height="wrap_content" 
         android:layout_gravity="left"
-                android:singleLine="true"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
+        android:singleLine="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
         android:text="@string/button_ok"
         />
 
