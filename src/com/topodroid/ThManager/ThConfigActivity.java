@@ -420,7 +420,7 @@ public class ThConfigActivity extends Activity
     } else if ( k1 < mNrButton1 && b0 == mButton1[k1++] ) {  // 3D
       try {
         Intent intent = new Intent( "Cave3D.intent.action.Launch" );
-        intent.putExtra( "survey", mApp.mConfig.mFilepath );
+        intent.putExtra( "INPUT_FILE", mApp.mConfig.mFilepath );
         startActivity( intent );
       } catch ( ActivityNotFoundException e ) {
         Toast.makeText( this, "Missing Cave3D", Toast.LENGTH_SHORT ).show();
